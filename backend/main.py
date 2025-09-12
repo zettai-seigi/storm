@@ -5,9 +5,8 @@ FastAPI application providing REST endpoints for the STORM UI frontend.
 Implements file-based storage for projects and integrates with STORM pipeline.
 """
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
 import os
 from contextlib import asynccontextmanager
 

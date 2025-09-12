@@ -4,9 +4,8 @@ Projects router for STORM UI API.
 Provides CRUD endpoints for managing STORM projects with file-based storage.
 """
 
-from fastapi import APIRouter, HTTPException, Query, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Query
 from typing import List, Optional, Dict, Any
-from uuid import UUID
 from pydantic import BaseModel, Field
 import logging
 
