@@ -598,6 +598,8 @@ describe('ConfigurationPanel', () => {
             maxPerspectives: 2,
           }),
         });
+      });
+    });
 
     it('loads comprehensive preset', async () => {
       render(

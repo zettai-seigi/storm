@@ -41,11 +41,16 @@ describe('usePipeline', () => {
     it('starts pipeline successfully', async () => {
       server.use(
         http.post('/api/pipeline/start', () => {
-          return HttpResponse.json({success: true,
-              data: {
-                pipelineId: 'pipeline-123',
-                status: 'initializing',
-              });
+          return HttpResponse.json({
+            success: true,
+            data: {
+              pipelineId: 'pipeline-123',
+              status: 'initializing',
+            }
+          });
+        })
+      );
+      
       const { result } = renderHook(() => usePipeline());
 
       await act(async () => {

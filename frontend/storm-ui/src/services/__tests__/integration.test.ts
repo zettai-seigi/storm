@@ -108,8 +108,10 @@ const server = setupServer(
           totalPages: 1,
           hasNext: false,
           hasPrevious: false,
-        });
-  }),
+        }
+      });
+    }
+  ),
 
   http.get('http://localhost:8000/api/v1/projects/:id', ({ request }) => {
     const { id } = request.params;
