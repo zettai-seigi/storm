@@ -37,7 +37,7 @@ setup(
     install_requires=[
         "dspy-ai>=2.5.29",
         "qdrant-client>=1.12.1",
-        "litellm>=1.58.4",
+        "litellm>=1.61.15",
         "langchain>=0.2.16",
         "langchain-qdrant>=0.2.0",
         "langchain-huggingface>=0.1.2",
