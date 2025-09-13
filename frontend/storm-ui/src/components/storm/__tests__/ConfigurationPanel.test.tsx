@@ -86,7 +86,6 @@ describe('ConfigurationPanel', () => {
       expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /save/i })).toBeDisabled();
     });
-  });
 
   describe('LLM Configuration', () => {
     it('updates model selection', async () => {
@@ -106,7 +105,6 @@ describe('ConfigurationPanel', () => {
         ...mockConfig,
         llm: { ...mockConfig.llm, model: 'gpt-3.5-turbo' },
       });
-    });
 
     it('updates provider selection', async () => {
       render(
@@ -125,7 +123,6 @@ describe('ConfigurationPanel', () => {
         ...mockConfig,
         llm: { ...mockConfig.llm, provider: 'anthropic' },
       });
-    });
 
     it('updates API key with masked input', async () => {
       render(
@@ -147,7 +144,6 @@ describe('ConfigurationPanel', () => {
         ...mockConfig,
         llm: { ...mockConfig.llm, apiKey: 'new-api-key' },
       });
-    });
 
     it('toggles API key visibility', async () => {
       render(
@@ -160,7 +156,9 @@ describe('ConfigurationPanel', () => {
       );
 
       const apiKeyInput = screen.getByLabelText(/api key/i);
-      const toggleButton = screen.getByRole('button', { name: /toggle api key visibility/i });
+      const toggleButton = screen.getByRole('button', {
+        name: /toggle api key visibility/i,
+      });
 
       expect(apiKeyInput).toHaveAttribute('type', 'password');
 
@@ -188,7 +186,6 @@ describe('ConfigurationPanel', () => {
         ...mockConfig,
         llm: { ...mockConfig.llm, temperature: 0.5 },
       });
-    });
 
     it('updates max tokens', async () => {
       render(
@@ -208,8 +205,6 @@ describe('ConfigurationPanel', () => {
         ...mockConfig,
         llm: { ...mockConfig.llm, maxTokens: 8000 },
       });
-    });
-  });
 
   describe('Retriever Configuration', () => {
     it('updates retriever type', async () => {
@@ -229,7 +224,6 @@ describe('ConfigurationPanel', () => {
         ...mockConfig,
         retriever: { ...mockConfig.retriever, type: 'you' },
       });
-    });
 
     it('updates retriever API key', async () => {
       render(
@@ -249,7 +243,6 @@ describe('ConfigurationPanel', () => {
         ...mockConfig,
         retriever: { ...mockConfig.retriever, apiKey: 'new-retriever-key' },
       });
-    });
 
     it('updates max results', async () => {
       render(
@@ -269,7 +262,6 @@ describe('ConfigurationPanel', () => {
         ...mockConfig,
         retriever: { ...mockConfig.retriever, maxResults: 20 },
       });
-    });
 
     it('shows different API key field based on retriever type', async () => {
       render(
@@ -290,7 +282,6 @@ describe('ConfigurationPanel', () => {
       // Should now show You.com API key
       expect(screen.getByText(/you\.com api key/i)).toBeInTheDocument();
     });
-  });
 
   describe('Pipeline Configuration', () => {
     it('toggles research step', async () => {
@@ -310,7 +301,6 @@ describe('ConfigurationPanel', () => {
         ...mockConfig,
         pipeline: { ...mockConfig.pipeline, doResearch: false },
       });
-    });
 
     it('toggles outline generation step', async () => {
       render(
@@ -329,7 +319,6 @@ describe('ConfigurationPanel', () => {
         ...mockConfig,
         pipeline: { ...mockConfig.pipeline, doGenerateOutline: false },
       });
-    });
 
     it('updates max conversation turns', async () => {
       render(
@@ -349,7 +338,6 @@ describe('ConfigurationPanel', () => {
         ...mockConfig,
         pipeline: { ...mockConfig.pipeline, maxConvTurns: 10 },
       });
-    });
 
     it('updates max perspectives', async () => {
       render(
@@ -369,8 +357,6 @@ describe('ConfigurationPanel', () => {
         ...mockConfig,
         pipeline: { ...mockConfig.pipeline, maxPerspectives: 5 },
       });
-    });
-  });
 
   describe('Actions', () => {
     it('saves configuration', async () => {
@@ -415,7 +401,9 @@ describe('ConfigurationPanel', () => {
         />
       );
 
-      const resetButton = screen.getByRole('button', { name: /reset to defaults/i });
+      const resetButton = screen.getByRole('button', {
+        name: /reset to defaults/i,
+      });
       await user.click(resetButton);
 
       expect(mockOnChange).toHaveBeenCalledWith({
@@ -437,7 +425,6 @@ describe('ConfigurationPanel', () => {
           maxPerspectives: 4,
         },
       });
-    });
 
     it('imports configuration from file', async () => {
       render(
@@ -449,15 +436,19 @@ describe('ConfigurationPanel', () => {
         />
       );
 
-      const importButton = screen.getByRole('button', { name: /import config/i });
+      const importButton = screen.getByRole('button', {
+        name: /import config/i,
+      });
       const fileInput = screen.getByLabelText(/import configuration file/i);
 
       const file = new File(
-        [JSON.stringify({ 
-          llm: { model: 'gpt-3.5-turbo', provider: 'openai' },
-          retriever: { type: 'you' },
-          pipeline: { doResearch: false }
-        })],
+        [
+          JSON.stringify({
+            llm: { model: 'gpt-3.5-turbo', provider: 'openai' },
+            retriever: { type: 'you' },
+            pipeline: { doResearch: false },
+          }),
+        ],
         'config.json',
         { type: 'application/json' }
       );
@@ -470,7 +461,6 @@ describe('ConfigurationPanel', () => {
         retriever: { ...mockConfig.retriever, type: 'you' },
         pipeline: { ...mockConfig.pipeline, doResearch: false },
       });
-    });
 
     it('exports configuration to file', async () => {
       // Mock URL.createObjectURL
@@ -486,12 +476,13 @@ describe('ConfigurationPanel', () => {
         />
       );
 
-      const exportButton = screen.getByRole('button', { name: /export config/i });
+      const exportButton = screen.getByRole('button', {
+        name: /export config/i,
+      });
       await user.click(exportButton);
 
       expect(global.URL.createObjectURL).toHaveBeenCalled();
     });
-  });
 
   describe('Validation', () => {
     it('validates required API keys', async () => {
@@ -532,7 +523,9 @@ describe('ConfigurationPanel', () => {
       const saveButton = screen.getByRole('button', { name: /save/i });
       await user.click(saveButton);
 
-      expect(screen.getByText(/temperature must be between 0 and 1/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/temperature must be between 0 and 1/i)
+      ).toBeInTheDocument();
       expect(mockOnSave).not.toHaveBeenCalled();
     });
 
@@ -574,10 +567,11 @@ describe('ConfigurationPanel', () => {
       const saveButton = screen.getByRole('button', { name: /save/i });
       await user.click(saveButton);
 
-      expect(screen.getByText(/must be a positive number/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/must be a positive number/i)
+      ).toBeInTheDocument();
       expect(mockOnSave).not.toHaveBeenCalled();
     });
-  });
 
   describe('Configuration Presets', () => {
     it('loads quick research preset', async () => {
@@ -603,8 +597,8 @@ describe('ConfigurationPanel', () => {
             maxConvTurns: 2,
             maxPerspectives: 2,
           }),
-        })
-      );
+        });
+      });
     });
 
     it('loads comprehensive preset', async () => {
@@ -630,10 +624,7 @@ describe('ConfigurationPanel', () => {
             maxConvTurns: 6,
             maxPerspectives: 5,
           }),
-        })
-      );
-    });
-  });
+        });
 
   describe('Advanced Settings', () => {
     it('toggles advanced settings panel', async () => {
@@ -674,8 +665,6 @@ describe('ConfigurationPanel', () => {
         ...mockConfig,
         llm: { ...mockConfig.llm, baseUrl: 'https://custom-api.example.com' },
       });
-    });
-  });
 
   describe('Accessibility', () => {
     it('meets accessibility standards', async () => {
@@ -717,11 +706,14 @@ describe('ConfigurationPanel', () => {
         />
       );
 
-      expect(screen.getByText(/controls randomness of responses/i)).toBeInTheDocument();
-      expect(screen.getByText(/maximum tokens in response/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/controls randomness of responses/i)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/maximum tokens in response/i)
+      ).toBeInTheDocument();
       expect(screen.getByText(/number of search results/i)).toBeInTheDocument();
     });
-  });
 
   describe('Keyboard Navigation', () => {
     it('supports tab navigation through form', async () => {
@@ -775,7 +767,6 @@ describe('ConfigurationPanel', () => {
       await user.keyboard('{Escape}');
       expect(mockOnCancel).toHaveBeenCalled();
     });
-  });
 
   describe('Error Handling', () => {
     it('handles invalid JSON import gracefully', async () => {
@@ -795,7 +786,9 @@ describe('ConfigurationPanel', () => {
 
       await user.upload(fileInput, invalidFile);
 
-      expect(screen.getByText(/invalid configuration file/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/invalid configuration file/i)
+      ).toBeInTheDocument();
       expect(mockOnChange).not.toHaveBeenCalled();
     });
 
@@ -816,7 +809,8 @@ describe('ConfigurationPanel', () => {
       const saveButton = screen.getByRole('button', { name: /save/i });
       await user.click(saveButton);
 
-      expect(screen.getByText(/failed to save configuration/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/failed to save configuration/i)
+      ).toBeInTheDocument();
     });
-  });
 });

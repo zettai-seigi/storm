@@ -23,7 +23,9 @@ jest.mock('@dnd-kit/core', () => ({
     isOver: false,
     setNodeRef: () => {},
   }),
-  DragOverlay: ({ children }: any) => <div data-testid="drag-overlay">{children}</div>,
+  DragOverlay: ({ children }: any) => (
+    <div data-testid="drag-overlay">{children}</div>
+  ),
 }));
 
 jest.mock('@dnd-kit/sortable', () => ({
@@ -41,7 +43,7 @@ jest.mock('@dnd-kit/sortable', () => ({
     newArray.splice(newIndex, 0, moved);
     return newArray;
   },
-}));
+});
 
 const mockOutline: ArticleOutline = {
   id: 'outline-1',
@@ -146,11 +148,15 @@ describe('OutlineEditor', () => {
       );
 
       // Check that subsections are nested
-      const introSection = screen.getByText('Introduction').closest('[data-testid="outline-section"]');
+      const introSection = screen
+        .getByText('Introduction')
+        .closest('[data-testid="outline-section"]');
       const backgroundSection = within(introSection!).getByText('Background');
       expect(backgroundSection).toBeInTheDocument();
 
-      const mainSection = screen.getByText('Main Content').closest('[data-testid="outline-section"]');
+      const mainSection = screen
+        .getByText('Main Content')
+        .closest('[data-testid="outline-section"]');
       const keyPointsSection = within(mainSection!).getByText('Key Points');
       const analysisSection = within(mainSection!).getByText('Analysis');
       expect(keyPointsSection).toBeInTheDocument();
@@ -168,11 +174,16 @@ describe('OutlineEditor', () => {
       );
 
       // Should not show edit buttons in read-only mode
-      expect(screen.queryByRole('button', { name: /add section/i })).not.toBeInTheDocument();
-      expect(screen.queryByRole('button', { name: /edit/i })).not.toBeInTheDocument();
-      expect(screen.queryByRole('button', { name: /delete/i })).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: /add section/i })
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: /edit/i })
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: /delete/i })
+      ).not.toBeInTheDocument();
     });
-  });
 
   describe('Section Management', () => {
     it('adds new section at top level', async () => {
@@ -204,7 +215,6 @@ describe('OutlineEditor', () => {
           }),
         ],
       });
-    });
 
     it('adds subsection to existing section', async () => {
       render(
@@ -215,8 +225,12 @@ describe('OutlineEditor', () => {
         />
       );
 
-      const introSection = screen.getByText('Introduction').closest('[data-testid="outline-section"]');
-      const addSubsectionButton = within(introSection!).getByRole('button', { name: /add subsection/i });
+      const introSection = screen
+        .getByText('Introduction')
+        .closest('[data-testid="outline-section"]');
+      const addSubsectionButton = within(introSection!).getByRole('button', {
+        name: /add subsection/i,
+      });
       await user.click(addSubsectionButton);
 
       const titleInput = screen.getByPlaceholderText(/section title/i);
@@ -238,9 +252,7 @@ describe('OutlineEditor', () => {
               ]),
             }),
           ]),
-        })
-      );
-    });
+        });
 
     it('edits existing section title', async () => {
       render(
@@ -267,9 +279,7 @@ describe('OutlineEditor', () => {
               title: 'Updated Introduction',
             }),
           ]),
-        })
-      );
-    });
+        });
 
     it('deletes section with confirmation', async () => {
       render(
@@ -280,19 +290,26 @@ describe('OutlineEditor', () => {
         />
       );
 
-      const conclusionSection = screen.getByText('Conclusion').closest('[data-testid="outline-section"]');
-      const deleteButton = within(conclusionSection!).getByRole('button', { name: /delete/i });
+      const conclusionSection = screen
+        .getByText('Conclusion')
+        .closest('[data-testid="outline-section"]');
+      const deleteButton = within(conclusionSection!).getByRole('button', {
+        name: /delete/i,
+      });
       await user.click(deleteButton);
 
       // Confirm deletion
-      const confirmDeleteButton = screen.getByRole('button', { name: /confirm delete/i });
+      const confirmDeleteButton = screen.getByRole('button', {
+        name: /confirm delete/i,
+      });
       await user.click(confirmDeleteButton);
 
       expect(mockOnChange).toHaveBeenCalledWith({
         ...mockOutline,
-        sections: mockOutline.sections.filter(section => section.id !== 'section-3'),
+        sections: mockOutline.sections.filter(
+          section => section.id !== 'section-3'
+        ),
       });
-    });
 
     it('cancels section deletion', async () => {
       render(
@@ -303,8 +320,12 @@ describe('OutlineEditor', () => {
         />
       );
 
-      const conclusionSection = screen.getByText('Conclusion').closest('[data-testid="outline-section"]');
-      const deleteButton = within(conclusionSection!).getByRole('button', { name: /delete/i });
+      const conclusionSection = screen
+        .getByText('Conclusion')
+        .closest('[data-testid="outline-section"]');
+      const deleteButton = within(conclusionSection!).getByRole('button', {
+        name: /delete/i,
+      });
       await user.click(deleteButton);
 
       // Cancel deletion
@@ -313,7 +334,6 @@ describe('OutlineEditor', () => {
 
       expect(mockOnChange).not.toHaveBeenCalled();
     });
-  });
 
   describe('Section Expansion/Collapse', () => {
     it('expands collapsed sections', async () => {
@@ -325,8 +345,12 @@ describe('OutlineEditor', () => {
         />
       );
 
-      const conclusionSection = screen.getByText('Conclusion').closest('[data-testid="outline-section"]');
-      const expandButton = within(conclusionSection!).getByRole('button', { name: /expand/i });
+      const conclusionSection = screen
+        .getByText('Conclusion')
+        .closest('[data-testid="outline-section"]');
+      const expandButton = within(conclusionSection!).getByRole('button', {
+        name: /expand/i,
+      });
       await user.click(expandButton);
 
       expect(mockOnChange).toHaveBeenCalledWith(
@@ -337,9 +361,7 @@ describe('OutlineEditor', () => {
               isExpanded: true,
             }),
           ]),
-        })
-      );
-    });
+        });
 
     it('collapses expanded sections', async () => {
       render(
@@ -350,8 +372,12 @@ describe('OutlineEditor', () => {
         />
       );
 
-      const introSection = screen.getByText('Introduction').closest('[data-testid="outline-section"]');
-      const collapseButton = within(introSection!).getByRole('button', { name: /collapse/i });
+      const introSection = screen
+        .getByText('Introduction')
+        .closest('[data-testid="outline-section"]');
+      const collapseButton = within(introSection!).getByRole('button', {
+        name: /collapse/i,
+      });
       await user.click(collapseButton);
 
       expect(mockOnChange).toHaveBeenCalledWith(
@@ -362,9 +388,7 @@ describe('OutlineEditor', () => {
               isExpanded: false,
             }),
           ]),
-        })
-      );
-    });
+        });
 
     it('expands all sections', async () => {
       render(
@@ -375,7 +399,9 @@ describe('OutlineEditor', () => {
         />
       );
 
-      const expandAllButton = screen.getByRole('button', { name: /expand all/i });
+      const expandAllButton = screen.getByRole('button', {
+        name: /expand all/i,
+      });
       await user.click(expandAllButton);
 
       expect(mockOnChange).toHaveBeenCalledWith(
@@ -385,9 +411,7 @@ describe('OutlineEditor', () => {
             expect.objectContaining({ isExpanded: true }),
             expect.objectContaining({ isExpanded: true }),
           ]),
-        })
-      );
-    });
+        });
 
     it('collapses all sections', async () => {
       render(
@@ -398,7 +422,9 @@ describe('OutlineEditor', () => {
         />
       );
 
-      const collapseAllButton = screen.getByRole('button', { name: /collapse all/i });
+      const collapseAllButton = screen.getByRole('button', {
+        name: /collapse all/i,
+      });
       await user.click(collapseAllButton);
 
       expect(mockOnChange).toHaveBeenCalledWith(
@@ -408,10 +434,7 @@ describe('OutlineEditor', () => {
             expect.objectContaining({ isExpanded: false }),
             expect.objectContaining({ isExpanded: false }),
           ]),
-        })
-      );
-    });
-  });
+        });
 
   describe('Drag and Drop', () => {
     it('reorders sections via drag and drop', async () => {
@@ -426,23 +449,22 @@ describe('OutlineEditor', () => {
       // Simulate drag end event
       const dndContext = screen.getByTestId('dnd-context');
       const onDragEnd = dndContext.getAttribute('data-on-drag-end');
-      
+
       // Simulate moving first section to second position
       if (onDragEnd) {
         const dragEndEvent = {
           active: { id: 'section-1' },
           over: { id: 'section-2' },
         };
-        
+
         // This would be called by the DnD system
-        fireEvent(dndContext, new CustomEvent('dragend', { detail: dragEndEvent }));
+        fireEvent(dndContext, new CustomEvent('dragend', { detail: dragEndEvent  }));
       }
 
       // Verify that the onChange was called with reordered sections
       await waitFor(() => {
         expect(mockOnChange).toHaveBeenCalled();
       });
-    });
 
     it('handles drag without drop', async () => {
       render(
@@ -454,19 +476,17 @@ describe('OutlineEditor', () => {
       );
 
       const dndContext = screen.getByTestId('dnd-context');
-      
+
       // Simulate drag without valid drop target
       const dragEndEvent = {
         active: { id: 'section-1' },
         over: null,
       };
-      
-      fireEvent(dndContext, new CustomEvent('dragend', { detail: dragEndEvent }));
 
+      fireEvent(dndContext, new CustomEvent('dragend', { detail: dragEndEvent  }));
       // Should not call onChange when drag is cancelled
       expect(mockOnChange).not.toHaveBeenCalled();
     });
-  });
 
   describe('Save Functionality', () => {
     it('saves outline changes', async () => {
@@ -485,7 +505,9 @@ describe('OutlineEditor', () => {
     });
 
     it('shows save status', async () => {
-      const mockOnSaveAsync = jest.fn(() => new Promise(resolve => setTimeout(resolve, 100)));
+      const mockOnSaveAsync = jest.fn(
+        () => new Promise(resolve => setTimeout(resolve, 100))
+      );
 
       render(
         <OutlineEditor
@@ -503,8 +525,6 @@ describe('OutlineEditor', () => {
       await waitFor(() => {
         expect(screen.getByText(/saved/i)).toBeInTheDocument();
       });
-    });
-  });
 
   describe('Keyboard Navigation', () => {
     it('supports arrow key navigation', async () => {
@@ -557,7 +577,6 @@ describe('OutlineEditor', () => {
 
       expect(screen.getByText(/delete this section/i)).toBeInTheDocument();
     });
-  });
 
   describe('Validation', () => {
     it('prevents empty section titles', async () => {
@@ -600,7 +619,6 @@ describe('OutlineEditor', () => {
       expect(screen.getByText(/title already exists/i)).toBeInTheDocument();
       expect(mockOnChange).not.toHaveBeenCalled();
     });
-  });
 
   describe('Accessibility', () => {
     it('meets accessibility standards', async () => {
@@ -625,9 +643,13 @@ describe('OutlineEditor', () => {
       );
 
       expect(screen.getByRole('tree')).toBeInTheDocument();
-      expect(screen.getByRole('treeitem', { name: /introduction/i })).toBeInTheDocument();
-      
-      const expandedSection = screen.getByRole('treeitem', { name: /introduction/i });
+      expect(
+        screen.getByRole('treeitem', { name: /introduction/i })
+      ).toBeInTheDocument();
+
+      const expandedSection = screen.getByRole('treeitem', {
+        name: /introduction/i,
+      });
       expect(expandedSection).toHaveAttribute('aria-expanded', 'true');
     });
 
@@ -651,7 +673,6 @@ describe('OutlineEditor', () => {
 
       expect(screen.getByText(/section added/i)).toBeInTheDocument();
     });
-  });
 
   describe('Performance', () => {
     it('handles large outlines efficiently', () => {
@@ -685,5 +706,4 @@ describe('OutlineEditor', () => {
 
       expect(endTime - startTime).toBeLessThan(1000);
     });
-  });
 });
