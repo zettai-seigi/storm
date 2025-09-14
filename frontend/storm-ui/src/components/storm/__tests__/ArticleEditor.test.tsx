@@ -27,7 +27,7 @@ jest.mock('@tiptap/react', () => ({
       </div>
     </div>
   ),
-}));
+});
 
 const mockArticle: GeneratedArticle = {
   title: 'Test Article',
@@ -119,7 +119,9 @@ describe('ArticleEditor', () => {
 
       const titleElement = screen.getByText('Test Article');
       expect(titleElement).toBeInTheDocument();
-      expect(screen.queryByRole('textbox', { name: /title/i })).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('textbox', { name: /title/i })
+      ).not.toBeInTheDocument();
     });
 
     it('shows outline when showOutline prop is true', () => {
@@ -150,7 +152,6 @@ describe('ArticleEditor', () => {
       expect(screen.getByText('Test citation 1')).toBeInTheDocument();
       expect(screen.getByText('Test citation 2')).toBeInTheDocument();
     });
-  });
 
   describe('User Interactions', () => {
     it('handles title changes', async () => {
@@ -171,8 +172,6 @@ describe('ArticleEditor', () => {
           ...mockArticle,
           title: 'Updated Article Title',
         });
-      });
-    });
 
     it('handles save button click', async () => {
       render(
@@ -199,7 +198,10 @@ describe('ArticleEditor', () => {
       );
 
       const citationLink = screen.getByText('Test citation 1').closest('a');
-      expect(citationLink).toHaveAttribute('href', 'https://example.com/source1');
+      expect(citationLink).toHaveAttribute(
+        'href',
+        'https://example.com/source1'
+      );
       expect(citationLink).toHaveAttribute('target', '_blank');
       expect(citationLink).toHaveAttribute('rel', 'noopener noreferrer');
     });
@@ -220,12 +222,11 @@ describe('ArticleEditor', () => {
       // Verify scroll behavior was triggered
       expect(Element.prototype.scrollIntoView).toHaveBeenCalled();
     });
-  });
 
   describe('Editor Integration', () => {
     it('initializes editor with article content', () => {
       const { useEditor } = require('@tiptap/react');
-      
+
       render(
         <ArticleEditor
           article={mockArticle}
@@ -238,13 +239,11 @@ describe('ArticleEditor', () => {
         expect.objectContaining({
           content: mockArticle.content,
           editable: true,
-        })
-      );
-    });
+        });
 
     it('disables editor in read-only mode', () => {
       const { useEditor } = require('@tiptap/react');
-      
+
       render(
         <ArticleEditor
           article={mockArticle}
@@ -257,10 +256,7 @@ describe('ArticleEditor', () => {
       expect(useEditor).toHaveBeenCalledWith(
         expect.objectContaining({
           editable: false,
-        })
-      );
-    });
-  });
+        });
 
   describe('Keyboard Shortcuts', () => {
     it('saves article with Ctrl+S', async () => {
@@ -296,7 +292,6 @@ describe('ArticleEditor', () => {
 
       expect(mockOnSave).toHaveBeenCalled();
     });
-  });
 
   describe('Error Handling', () => {
     it('handles save errors gracefully', async () => {
@@ -334,7 +329,6 @@ describe('ArticleEditor', () => {
       expect(screen.getByText(/title is required/i)).toBeInTheDocument();
       expect(mockOnSave).not.toHaveBeenCalled();
     });
-  });
 
   describe('Performance', () => {
     it('renders large articles efficiently', () => {
@@ -363,7 +357,6 @@ describe('ArticleEditor', () => {
       // Should render within reasonable time (less than 500ms)
       expect(endTime - startTime).toBeLessThan(500);
     });
-  });
 
   describe('Accessibility', () => {
     it('meets accessibility standards', async () => {
@@ -388,8 +381,12 @@ describe('ArticleEditor', () => {
       );
 
       expect(screen.getByLabelText(/article title/i)).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /save article/i })).toBeInTheDocument();
-      expect(screen.getByRole('region', { name: /article content/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /save article/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('region', { name: /article content/i })
+      ).toBeInTheDocument();
     });
 
     it('supports keyboard navigation', async () => {
@@ -412,11 +409,12 @@ describe('ArticleEditor', () => {
       await user.tab();
       expect(screen.getByText('Main Content')).toHaveFocus();
     });
-  });
 
   describe('Visual States', () => {
     it('shows loading state during save', async () => {
-      const mockOnSaveAsync = jest.fn(() => new Promise(resolve => setTimeout(resolve, 100)));
+      const mockOnSaveAsync = jest.fn(
+        () => new Promise(resolve => setTimeout(resolve, 100))
+      );
 
       render(
         <ArticleEditor
@@ -436,7 +434,6 @@ describe('ArticleEditor', () => {
         expect(screen.queryByText(/saving/i)).not.toBeInTheDocument();
         expect(saveButton).not.toBeDisabled();
       });
-    });
 
     it('shows word count', () => {
       render(
@@ -462,5 +459,4 @@ describe('ArticleEditor', () => {
       expect(screen.getByText(/last modified/i)).toBeInTheDocument();
       expect(screen.getByText(/jan 1, 2024/i)).toBeInTheDocument();
     });
-  });
 });

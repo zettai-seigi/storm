@@ -27,7 +27,9 @@ describe('ProjectCard', () => {
   it('calls onSelect when card is clicked', () => {
     render(<ProjectCard {...defaultProps} />);
 
-    fireEvent.click(screen.getByRole('article') || screen.getByText(mockProject.title));
+    fireEvent.click(
+      screen.getByRole('article') || screen.getByText(mockProject.title)
+    );
     expect(defaultProps.onSelect).toHaveBeenCalledWith(mockProject);
   });
 
@@ -86,12 +88,12 @@ describe('ProjectCard', () => {
     expect(screen.getByText('Delete')).toBeInTheDocument();
 
     // Test duplicate action
-    fireEvent.click(screen.getByText('Duplicate'));
+    fireEvent.click(screen.getByText('Duplicate', { status: 200 });
     expect(defaultProps.onDuplicate).toHaveBeenCalledWith(mockProject);
 
     // Re-open menu for delete test
     fireEvent.click(dropdownTrigger);
-    fireEvent.click(screen.getByText('Delete'));
+    fireEvent.click(screen.getByText('Delete', { status: 200 });
     expect(defaultProps.onDelete).toHaveBeenCalledWith(mockProject.id);
   });
 
@@ -100,7 +102,9 @@ describe('ProjectCard', () => {
       status: 'writing_article',
     });
 
-    const { container } = render(<ProjectCard {...defaultProps} project={runningProject} />);
+    const { container } = render(
+      <ProjectCard {...defaultProps} project={runningProject} />
+    );
 
     // Check for the animated dot indicator
     const indicator = container.querySelector('.animate-pulse');
@@ -123,4 +127,6 @@ describe('ProjectCard', () => {
 
     expect(defaultProps.onSelect).not.toHaveBeenCalled();
   });
-});
+
+}
+)))
