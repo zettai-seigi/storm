@@ -426,7 +426,7 @@ class ConfigurationService:
             if key in fields:
                 result[key] = "***REDACTED***"
             elif isinstance(value, dict):
-                result[key] = self._remove_sensitive_fields(value, fields)
+                result[key] = self._remove_sensitive_fields(value, fields)  # type: ignore
             else:
                 result[key] = value
         return result

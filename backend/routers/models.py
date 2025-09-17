@@ -40,7 +40,7 @@ async def get_provider_models(
     if host:
         kwargs["host"] = host
     if port:
-        kwargs["port"] = port
+        kwargs["port"] = str(port)  # Convert to string for consistency
     if api_key:
         kwargs["api_key"] = api_key
 
@@ -131,7 +131,7 @@ async def test_provider_connection(
     if host:
         kwargs["host"] = host
     if port:
-        kwargs["port"] = port
+        kwargs["port"] = str(port)  # Convert to string for consistency
     if api_key:
         kwargs["api_key"] = api_key
 
