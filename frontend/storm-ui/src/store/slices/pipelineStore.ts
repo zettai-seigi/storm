@@ -118,9 +118,12 @@ export const usePipelineStore = create<PipelineStore>()(
 
           // Pipeline execution
           startPipeline: async (projectId, config) => {
-            console.log('[PipelineStore] Starting pipeline for project:', projectId);
+            console.log(
+              '[PipelineStore] Starting pipeline for project:',
+              projectId
+            );
             console.log('[PipelineStore] Config received:', config);
-            
+
             set(draft => {
               draft.loading = true;
               draft.error = null;
@@ -147,26 +150,31 @@ export const usePipelineStore = create<PipelineStore>()(
                       max_search_queries_per_turn:
                         config.pipeline?.maxSearchQueriesPerTurn ?? 3,
                       do_research: config.pipeline?.doResearch ?? true,
-                      do_generate_outline: config.pipeline?.doGenerateOutline ?? true,
-                      do_generate_article: config.pipeline?.doGenerateArticle ?? true,
-                      do_polish_article: config.pipeline?.doPolishArticle ?? true,
+                      do_generate_outline:
+                        config.pipeline?.doGenerateOutline ?? true,
+                      do_generate_article:
+                        config.pipeline?.doGenerateArticle ?? true,
+                      do_polish_article:
+                        config.pipeline?.doPolishArticle ?? true,
                     },
                     output: {
                       output_format: config.output?.format ?? 'markdown',
-                      include_citations: config.output?.includeCitations ?? true,
+                      include_citations:
+                        config.output?.includeCitations ?? true,
                     },
                   }
                 : undefined;
 
               console.log('[PipelineStore] Backend config:', backendConfig);
-              
-              const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+
+              const apiUrl =
+                process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
               const url = `${apiUrl}/pipeline/${projectId}/run`;
               const requestBody = { config: backendConfig, mock_mode: false };
-              
+
               console.log('[PipelineStore] API URL:', url);
               console.log('[PipelineStore] Request body:', requestBody);
-              
+
               const response = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -179,37 +187,48 @@ export const usePipelineStore = create<PipelineStore>()(
               if (!response.ok) {
                 const errorText = await response.text();
                 console.error('[PipelineStore] Error response:', errorText);
-                
+
                 // Check if the error is about an already running pipeline
-                if (response.status === 400 && errorText.includes('already running')) {
+                if (
+                  response.status === 400 &&
+                  errorText.includes('already running')
+                ) {
                   // Offer to cancel the stuck pipeline
                   const shouldCancel = window.confirm(
                     'A pipeline appears to be already running or stuck. Would you like to cancel it and start a new one?'
                   );
-                  
+
                   if (shouldCancel) {
-                    console.log('[PipelineStore] User chose to cancel stuck pipeline');
+                    console.log(
+                      '[PipelineStore] User chose to cancel stuck pipeline'
+                    );
                     // Cancel the stuck pipeline
                     const cancelUrl = `${apiUrl}/pipeline/${projectId}/cancel`;
-                    const cancelResponse = await fetch(cancelUrl, { method: 'POST' });
-                    
+                    const cancelResponse = await fetch(cancelUrl, {
+                      method: 'POST',
+                    });
+
                     if (cancelResponse.ok) {
-                      console.log('[PipelineStore] Successfully cancelled stuck pipeline, retrying...');
+                      console.log(
+                        '[PipelineStore] Successfully cancelled stuck pipeline, retrying...'
+                      );
                       // Wait a moment for the cancellation to process
                       await new Promise(resolve => setTimeout(resolve, 500));
-                      
+
                       // Retry the pipeline start
                       const retryResponse = await fetch(url, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(requestBody),
                       });
-                      
+
                       if (retryResponse.ok) {
                         const data = await retryResponse.json();
                         // Continue with normal flow
-                        const pipelineId = data.pipelineId || `pipeline-${projectId}-${Date.now()}`;
-                        
+                        const pipelineId =
+                          data.pipelineId ||
+                          `pipeline-${projectId}-${Date.now()}`;
+
                         const pipelineExecution: PipelineExecution = {
                           id: pipelineId,
                           projectId,
@@ -232,31 +251,40 @@ export const usePipelineStore = create<PipelineStore>()(
                             duration: 0,
                           },
                         };
-                        
+
                         set(draft => {
-                          draft.runningPipelines[pipelineId] = pipelineExecution;
+                          draft.runningPipelines[pipelineId] =
+                            pipelineExecution;
                           draft.activeStage = 'initializing';
                           draft.canCancel = true;
                           draft.loading = false;
                           draft.lastUpdated = new Date();
                         });
-                        
+
                         // Subscribe to pipeline updates
                         get().subscribeToUpdates(pipelineId);
-                        
+
                         return pipelineId;
                       } else {
                         const retryError = await retryResponse.text();
-                        throw new Error(`Failed to restart pipeline: ${retryError}`);
+                        throw new Error(
+                          `Failed to restart pipeline: ${retryError}`
+                        );
                       }
                     } else {
-                      throw new Error('Failed to cancel stuck pipeline. Please try manually cancelling from the backend.');
+                      throw new Error(
+                        'Failed to cancel stuck pipeline. Please try manually cancelling from the backend.'
+                      );
                     }
                   } else {
-                    throw new Error('Pipeline is already running. Please cancel it first or wait for it to complete.');
+                    throw new Error(
+                      'Pipeline is already running. Please cancel it first or wait for it to complete.'
+                    );
                   }
                 } else {
-                  throw new Error(`Failed to start pipeline: ${response.status} - ${errorText}`);
+                  throw new Error(
+                    `Failed to start pipeline: ${response.status} - ${errorText}`
+                  );
                 }
               }
 
@@ -822,9 +850,11 @@ export const usePipelineStore = create<PipelineStore>()(
               );
               return;
             }
-            
-            console.log(`[PipelineStore] Subscribing to WebSocket updates for pipeline ${pipelineId}`);
-            
+
+            console.log(
+              `[PipelineStore] Subscribing to WebSocket updates for pipeline ${pipelineId}`
+            );
+
             // For now, use polling until WebSocket is fully integrated
             const pollInterval = setInterval(async () => {
               try {
@@ -833,14 +863,18 @@ export const usePipelineStore = create<PipelineStore>()(
                   clearInterval(pollInterval);
                   return;
                 }
-                
-                const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-                const response = await fetch(`${apiUrl}/pipeline/${pipeline.projectId}/status`);
-                
+
+                const apiUrl =
+                  process.env.NEXT_PUBLIC_API_URL ||
+                  'http://localhost:8000/api';
+                const response = await fetch(
+                  `${apiUrl}/pipeline/${pipeline.projectId}/status`
+                );
+
                 if (response.ok) {
                   const status = await response.json();
                   console.log('[PipelineStore] Poll status:', status);
-                  
+
                   if (status.progress) {
                     // Update pipeline progress
                     set(draft => {
@@ -848,21 +882,30 @@ export const usePipelineStore = create<PipelineStore>()(
                         draft.runningPipelines[pipelineId].progress = {
                           stage: status.progress.stage || 'initializing',
                           stageProgress: status.progress.stage_progress || 0,
-                          overallProgress: status.progress.overall_progress || 0,
-                          startTime: draft.runningPipelines[pipelineId].progress.startTime,
+                          overallProgress:
+                            status.progress.overall_progress || 0,
+                          startTime:
+                            draft.runningPipelines[pipelineId].progress
+                              .startTime,
                           currentTask: status.progress.current_task || '',
                           errors: status.progress.errors || [],
                         };
-                        
+
                         // Update global progress
-                        draft.globalProgress = status.progress.overall_progress || 0;
-                        draft.activeStage = status.progress.stage || 'initializing';
-                        
+                        draft.globalProgress =
+                          status.progress.overall_progress || 0;
+                        draft.activeStage =
+                          status.progress.stage || 'initializing';
+
                         // Check if completed or failed
                         if (status.progress.status === 'completed') {
-                          draft.runningPipelines[pipelineId].status = 'completed';
+                          draft.runningPipelines[pipelineId].status =
+                            'completed';
                           clearInterval(pollInterval);
-                        } else if (status.progress.status === 'error' || status.progress.status === 'cancelled') {
+                        } else if (
+                          status.progress.status === 'error' ||
+                          status.progress.status === 'cancelled'
+                        ) {
                           draft.runningPipelines[pipelineId].status = 'failed';
                           clearInterval(pollInterval);
                         }
@@ -874,7 +917,7 @@ export const usePipelineStore = create<PipelineStore>()(
                 console.error('[PipelineStore] Poll error:', error);
               }
             }, 2000); // Poll every 2 seconds
-            
+
             // Store interval ID for cleanup
             set(draft => {
               if (!draft.updateIntervals) {
@@ -887,7 +930,9 @@ export const usePipelineStore = create<PipelineStore>()(
           unsubscribeFromUpdates: pipelineId => {
             const state = get();
             if (state.updateIntervals && state.updateIntervals[pipelineId]) {
-              console.log(`[PipelineStore] Unsubscribing from updates for pipeline ${pipelineId}`);
+              console.log(
+                `[PipelineStore] Unsubscribing from updates for pipeline ${pipelineId}`
+              );
               clearInterval(state.updateIntervals[pipelineId]);
               set(draft => {
                 delete draft.updateIntervals[pipelineId];

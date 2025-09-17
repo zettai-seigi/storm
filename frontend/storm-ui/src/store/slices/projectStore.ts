@@ -12,7 +12,10 @@ import { devtools } from '../middleware/devtools';
 import { immer } from '../middleware/immer';
 import { subscriptions } from '../middleware/subscriptions';
 import { logger } from '@/utils/logger';
-import { mapConfigToBackend, mapConfigFromBackend } from '@/utils/config-mapper';
+import {
+  mapConfigToBackend,
+  mapConfigFromBackend,
+} from '@/utils/config-mapper';
 
 // Initial state
 const initialState: ProjectState = {
@@ -446,7 +449,8 @@ export const useProjectStore = create<ProjectStore>()(
               if (project.config) {
                 // Check if it's backend format (has retriever_type or do_research fields)
                 const isBackendFormat =
-                  (project.config as any).retriever?.retriever_type !== undefined ||
+                  (project.config as any).retriever?.retriever_type !==
+                    undefined ||
                   (project.config as any).pipeline?.do_research !== undefined ||
                   (project.config as any).llm?.max_tokens !== undefined;
 
@@ -738,8 +742,10 @@ export const useProjectStore = create<ProjectStore>()(
                 llm_provider: backendConfig.llm?.provider,
                 retriever_type: backendConfig.retriever?.retriever_type,
                 do_research: backendConfig.pipeline?.do_research,
-                do_generate_outline: backendConfig.pipeline?.do_generate_outline,
-                do_generate_article: backendConfig.pipeline?.do_generate_article,
+                do_generate_outline:
+                  backendConfig.pipeline?.do_generate_outline,
+                do_generate_article:
+                  backendConfig.pipeline?.do_generate_article,
                 do_polish_article: backendConfig.pipeline?.do_polish_article,
               });
 

@@ -128,10 +128,10 @@ describe('useProjects', () => {
           return HttpResponse.json({
             success: true,
             data: {
-                projects: [mockProjects[1]],
-                total: 2,
-                page: 2,
-                limit: 5,
+              projects: [mockProjects[1]],
+              total: 2,
+              page: 2,
+              limit: 5,
             },
           });
         })
@@ -154,17 +154,18 @@ describe('useProjects', () => {
           return HttpResponse.json({
             success: true,
             data: {
-                projects: [mockProjects[0]],
-                total: 1,
-                page: 1,
-                limit: 10,
+              projects: [mockProjects[0]],
+              total: 1,
+              page: 1,
+              limit: 10,
             },
           });
         })
       );
 
       const { result } = renderHook(() =>
-        useProjects({ filters: { status: ['completed'] } }));
+        useProjects({ filters: { status: ['completed'] } })
+      );
       await waitFor(() => {
         expect(result.current.projects).toEqual([mockProjects[0]]);
       });
@@ -179,17 +180,18 @@ describe('useProjects', () => {
           return HttpResponse.json({
             success: true,
             data: {
-                projects: [mockProjects[0]],
-                total: 1,
-                page: 1,
-                limit: 10,
+              projects: [mockProjects[0]],
+              total: 1,
+              page: 1,
+              limit: 10,
             },
           });
         })
       );
 
       const { result } = renderHook(() =>
-        useProjects({ filters: { searchQuery: 'AI' } }));
+        useProjects({ filters: { searchQuery: 'AI' } })
+      );
       await waitFor(() => {
         expect(result.current.projects).toEqual([mockProjects[0]]);
       });
@@ -580,7 +582,7 @@ describe('useProjects', () => {
           });
         })
       );
-      
+
       act(() => {
         result.current.updateProject(
           'project-1',
@@ -657,11 +659,11 @@ describe('useProjects', () => {
           return HttpResponse.json({
             success: true,
             data: {
-                projects: mockProjects,
-                total: mockProjects.length,
-                page: 1,
-                limit: 10,
-              },
+              projects: mockProjects,
+              total: mockProjects.length,
+              page: 1,
+              limit: 10,
+            },
           });
         })
       );
@@ -688,11 +690,11 @@ describe('useProjects', () => {
           return HttpResponse.json({
             success: true,
             data: {
-                projects: mockProjects,
-                total: mockProjects.length,
-                page: 1,
-                limit: 10,
-              },
+              projects: mockProjects,
+              total: mockProjects.length,
+              page: 1,
+              limit: 10,
+            },
           });
         }),
         http.post('/api/projects', () => {

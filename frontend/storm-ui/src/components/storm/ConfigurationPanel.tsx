@@ -316,16 +316,18 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
   ];
 
   // Dynamic model fetching for selected provider
-  const { models: availableModels, loading: modelsLoading, refetch: refetchModels } = useAvailableModels(
-    localConfig.llm?.provider || ''
-  );
+  const {
+    models: availableModels,
+    loading: modelsLoading,
+    refetch: refetchModels,
+  } = useAvailableModels(localConfig.llm?.provider || '');
 
   // Use available models from API only, no fallback
   const modelOptions = React.useMemo(() => {
     return availableModels.map(m => ({
       value: m.id,
       label: m.name || m.id,
-      description: m.description
+      description: m.description,
     }));
   }, [availableModels]);
 
@@ -338,7 +340,7 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
     { value: 'ollama', label: 'Ollama (Local)' },
     { value: 'lmstudio', label: 'LM Studio (Local)' },
     { value: 'groq', label: 'Groq' },
-    { value: 'cohere', label: 'Cohere' }
+    { value: 'cohere', label: 'Cohere' },
   ];
 
   return (
@@ -422,7 +424,12 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
                       onClick={() => refetchModels()}
                       disabled={modelsLoading}
                     >
-                      <RefreshCw className={cn("h-3 w-3", modelsLoading && "animate-spin")} />
+                      <RefreshCw
+                        className={cn(
+                          'h-3 w-3',
+                          modelsLoading && 'animate-spin'
+                        )}
+                      />
                     </Button>
                   </div>
                   <Select
@@ -432,7 +439,11 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
                     }
                   >
                     <SelectTrigger id="llm-model" disabled={modelsLoading}>
-                      <SelectValue placeholder={modelsLoading ? "Loading models..." : "Select model"} />
+                      <SelectValue
+                        placeholder={
+                          modelsLoading ? 'Loading models...' : 'Select model'
+                        }
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {modelOptions.length > 0 ? (
@@ -450,7 +461,7 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
                         ))
                       ) : (
                         <SelectItem value="custom" disabled>
-                          {modelsLoading ? "Loading..." : "No models available"}
+                          {modelsLoading ? 'Loading...' : 'No models available'}
                         </SelectItem>
                       )}
                     </SelectContent>
@@ -492,7 +503,9 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
                   <Label htmlFor="lmstudio-base-url">LM Studio Base URL</Label>
                   <Input
                     id="lmstudio-base-url"
-                    value={localConfig.llm?.baseUrl || 'http://localhost:1234/v1'}
+                    value={
+                      localConfig.llm?.baseUrl || 'http://localhost:1234/v1'
+                    }
                     onChange={e =>
                       handleConfigChange('llm.baseUrl', e.target.value)
                     }

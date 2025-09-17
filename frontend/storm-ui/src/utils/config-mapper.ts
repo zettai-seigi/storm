@@ -60,7 +60,10 @@ export function mapConfigFromBackend(backendConfig: any): StormConfig {
   }
 
   // Check if this is the old flat format (has top-level llm_provider or do_research)
-  if (backendConfig.llm_provider || (backendConfig.do_research !== undefined && !backendConfig.pipeline)) {
+  if (
+    backendConfig.llm_provider ||
+    (backendConfig.do_research !== undefined && !backendConfig.pipeline)
+  ) {
     // Old flat format
     return {
       llm: {
@@ -88,42 +91,50 @@ export function mapConfigFromBackend(backendConfig: any): StormConfig {
 
   // New nested format
   return {
-    llm: backendConfig.llm ? {
-      model: backendConfig.llm.model,
-      provider: backendConfig.llm.provider,
-      temperature: backendConfig.llm.temperature,
-      maxTokens: backendConfig.llm.max_tokens,
-      topP: backendConfig.llm.top_p,
-      frequencyPenalty: backendConfig.llm.frequency_penalty,
-      presencePenalty: backendConfig.llm.presence_penalty,
-      apiKey: backendConfig.llm.api_key,
-      baseUrl: backendConfig.llm.api_base,
-      apiVersion: backendConfig.llm.api_version,
-      deploymentName: backendConfig.llm.deployment_name,
-      ollamaHost: backendConfig.llm.ollama_host,
-      ollamaPort: backendConfig.llm.ollama_port,
-      stopSequences: backendConfig.llm.stop_sequences,
-    } : undefined,
-    retriever: backendConfig.retriever ? {
-      type: backendConfig.retriever.retriever_type,
-      maxResults: backendConfig.retriever.max_search_results,
-      searchTopK: backendConfig.retriever.search_top_k,
-      minRelevanceScore: backendConfig.retriever.min_relevance_score,
-      enableReranking: backendConfig.retriever.enable_reranking,
-      rerankingModel: backendConfig.retriever.reranking_model,
-      apiKey: backendConfig.retriever.api_key,
-    } : undefined,
-    pipeline: backendConfig.pipeline ? {
-      doResearch: backendConfig.pipeline.do_research,
-      doGenerateOutline: backendConfig.pipeline.do_generate_outline,
-      doGenerateArticle: backendConfig.pipeline.do_generate_article,
-      doPolishArticle: backendConfig.pipeline.do_polish_article,
-      maxConvTurns: backendConfig.pipeline.max_conv_turn,
-      maxPerspectives: backendConfig.pipeline.max_perspective,
-      searchQueriesPerTurn: backendConfig.pipeline.search_queries_per_turn || backendConfig.pipeline.max_search_queries_per_turn,
-      disablePerspective: backendConfig.pipeline.disable_perspective,
-      includeFigures: backendConfig.pipeline.include_figures,
-      includeReferences: backendConfig.pipeline.include_references,
-    } : undefined,
+    llm: backendConfig.llm
+      ? {
+          model: backendConfig.llm.model,
+          provider: backendConfig.llm.provider,
+          temperature: backendConfig.llm.temperature,
+          maxTokens: backendConfig.llm.max_tokens,
+          topP: backendConfig.llm.top_p,
+          frequencyPenalty: backendConfig.llm.frequency_penalty,
+          presencePenalty: backendConfig.llm.presence_penalty,
+          apiKey: backendConfig.llm.api_key,
+          baseUrl: backendConfig.llm.api_base,
+          apiVersion: backendConfig.llm.api_version,
+          deploymentName: backendConfig.llm.deployment_name,
+          ollamaHost: backendConfig.llm.ollama_host,
+          ollamaPort: backendConfig.llm.ollama_port,
+          stopSequences: backendConfig.llm.stop_sequences,
+        }
+      : undefined,
+    retriever: backendConfig.retriever
+      ? {
+          type: backendConfig.retriever.retriever_type,
+          maxResults: backendConfig.retriever.max_search_results,
+          searchTopK: backendConfig.retriever.search_top_k,
+          minRelevanceScore: backendConfig.retriever.min_relevance_score,
+          enableReranking: backendConfig.retriever.enable_reranking,
+          rerankingModel: backendConfig.retriever.reranking_model,
+          apiKey: backendConfig.retriever.api_key,
+        }
+      : undefined,
+    pipeline: backendConfig.pipeline
+      ? {
+          doResearch: backendConfig.pipeline.do_research,
+          doGenerateOutline: backendConfig.pipeline.do_generate_outline,
+          doGenerateArticle: backendConfig.pipeline.do_generate_article,
+          doPolishArticle: backendConfig.pipeline.do_polish_article,
+          maxConvTurns: backendConfig.pipeline.max_conv_turn,
+          maxPerspectives: backendConfig.pipeline.max_perspective,
+          searchQueriesPerTurn:
+            backendConfig.pipeline.search_queries_per_turn ||
+            backendConfig.pipeline.max_search_queries_per_turn,
+          disablePerspective: backendConfig.pipeline.disable_perspective,
+          includeFigures: backendConfig.pipeline.include_figures,
+          includeReferences: backendConfig.pipeline.include_references,
+        }
+      : undefined,
   };
 }

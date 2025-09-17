@@ -39,7 +39,8 @@ export function useAvailableModels(provider: string): UseAvailableModelsResult {
     setError(null);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+      const apiUrl =
+        process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
       // Add query params for local providers
       let url = `${apiUrl}/models/providers/${provider}/models`;
@@ -77,7 +78,7 @@ export function useAvailableModels(provider: string): UseAvailableModelsResult {
     models,
     loading,
     error,
-    refetch: fetchModels
+    refetch: fetchModels,
   };
 }
 
@@ -92,7 +93,8 @@ export function useAllProviders() {
     setError(null);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+      const apiUrl =
+        process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
       const response = await fetch(`${apiUrl}/models/providers`);
       const data = await response.json();
       setProviders(data);
@@ -113,7 +115,7 @@ export function useAllProviders() {
     providers,
     loading,
     error,
-    refetch: fetchProviders
+    refetch: fetchProviders,
   };
 }
 
