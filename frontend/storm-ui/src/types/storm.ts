@@ -36,11 +36,27 @@ export type ProjectStatus =
 export interface StormConfig {
   llm?: {
     model: string;
-    provider: 'openai' | 'anthropic' | 'azure' | 'gemini' | 'ollama' | 'groq';
+    provider:
+      | 'openai'
+      | 'anthropic'
+      | 'azure'
+      | 'gemini'
+      | 'ollama'
+      | 'groq'
+      | 'lmstudio'
+      | 'cohere';
     apiKey?: string;
     baseUrl?: string;
     temperature?: number;
     maxTokens?: number;
+    topP?: number;
+    frequencyPenalty?: number;
+    presencePenalty?: number;
+    apiVersion?: string;
+    deploymentName?: string;
+    ollamaHost?: string;
+    ollamaPort?: number;
+    stopSequences?: string[];
   };
   retriever?: {
     type:
@@ -55,6 +71,10 @@ export interface StormConfig {
     apiKey?: string;
     maxResults?: number;
     topK?: number;
+    searchTopK?: number;
+    minRelevanceScore?: number;
+    enableReranking?: boolean;
+    rerankingModel?: string;
   };
   pipeline?: {
     doResearch: boolean;
@@ -64,6 +84,10 @@ export interface StormConfig {
     maxConvTurns?: number;
     maxPerspectives?: number;
     maxSearchQueriesPerTurn?: number;
+    searchQueriesPerTurn?: number;
+    disablePerspective?: boolean;
+    includeFigures?: boolean;
+    includeReferences?: boolean;
   };
   // Legacy backend properties (for backward compatibility)
   llm_provider?: string;
@@ -87,6 +111,7 @@ export interface PipelineProgress {
   estimatedEndTime?: Date;
   currentTask?: string;
   errors?: PipelineError[];
+  stages_completed?: string[]; // List of completed stage names
 }
 
 export type PipelineStage =

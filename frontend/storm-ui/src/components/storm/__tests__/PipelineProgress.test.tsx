@@ -156,6 +156,4 @@ describe('PipelineProgress', () => {
 
     jest.useRealTimers();
   });
-
-}
-)
+});

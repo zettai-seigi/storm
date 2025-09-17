@@ -4,9 +4,10 @@
 
 import { ProjectService } from './project';
 import { PipelineService } from './pipeline';
-import { SettingsService } from './config';
+import { ConfigService } from './config';
 
-export { ProjectService, PipelineService, SettingsService };
+export { ProjectService, PipelineService, ConfigService };
+export { ConfigService as SettingsService }; // Alias for backward compatibility
 
 // Re-export all services
 export * from './project';

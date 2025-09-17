@@ -91,6 +91,7 @@ export interface PipelineState extends BaseSlice {
   estimatedTimeRemaining: number | null;
   canCancel: boolean;
   autoSave: boolean;
+  updateIntervals: Record<string, NodeJS.Timeout>;
 }
 
 export interface PipelineExecution {
