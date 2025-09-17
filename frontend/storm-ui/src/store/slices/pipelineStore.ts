@@ -852,7 +852,6 @@ export const usePipelineStore = create<PipelineStore>()(
                           startTime: draft.runningPipelines[pipelineId].progress.startTime,
                           currentTask: status.progress.current_task || '',
                           errors: status.progress.errors || [],
-                          estimatedTimeRemaining: status.progress.estimated_time_remaining,
                         };
                         
                         // Update global progress

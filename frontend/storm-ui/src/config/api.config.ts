@@ -12,7 +12,9 @@ export type LLMProvider =
   | 'azure'
   | 'gemini'
   | 'ollama'
-  | 'groq';
+  | 'groq'
+  | 'lmstudio'
+  | 'cohere';
 export type RetrieverType =
   | 'google'
   | 'bing'

@@ -36,7 +36,7 @@ export type ProjectStatus =
 export interface StormConfig {
   llm?: {
     model: string;
-    provider: 'openai' | 'anthropic' | 'azure' | 'gemini' | 'ollama' | 'groq';
+    provider: 'openai' | 'anthropic' | 'azure' | 'gemini' | 'ollama' | 'groq' | 'lmstudio' | 'cohere';
     apiKey?: string;
     baseUrl?: string;
     temperature?: number;
