@@ -15,9 +15,9 @@ pathlib2==2.3.7.post1
 
 # Authentication and security
 PyJWT==2.10.1  # Secure JWT implementation (Updated to fix CVE-2024-53861)
-cryptography==44.0.1  # For JWT signing (Updated to fix OpenSSL vulnerabilities)
+cryptography==46.0.1  # For JWT signing (Updated to fix OpenSSL vulnerabilities)
 passlib[bcrypt]==1.7.4
-python-multipart==0.0.18  # Updated to fix DoS vulnerability (CVE-2024-53981)
+python-multipart==0.0.20  # Updated to fix DoS vulnerability (CVE-2024-53981)
 
 # STORM dependencies (assumed to be installed separately)
 # knowledge-storm should be installed from the parent directory
@@ -27,7 +27,7 @@ python-multipart==0.0.18  # Updated to fix DoS vulnerability (CVE-2024-53981)
 pytest==7.4.3
 pytest-asyncio==0.21.1
 httpx==0.25.2
-black==24.3.0  # Updated to fix ReDoS vulnerability (CVE-2024-21503)
+black==25.1.0  # Updated to fix ReDoS vulnerability (CVE-2024-21503)
 isort==5.12.0
 mypy==1.7.1
 
