@@ -5,9 +5,9 @@ import os
 import sys
 import json
 import traceback
-from services.storm_runner import StormRunnerService
-from services.file_service import FileService
-from services.config_service import ProjectConfig
+from backend.services.storm_runner import StormRunnerService
+from backend.services.file_service import FileProjectService
+from backend.services.config_service import ProjectConfig
 import asyncio
 import logging
 
@@ -24,7 +24,7 @@ async def test_pipeline():
 
     try:
         # Initialize services
-        file_service = FileService()
+        file_service = FileProjectService()
         storm_runner = StormRunnerService(file_service)
 
         # Get project
@@ -33,12 +33,12 @@ async def test_pipeline():
             logger.error(f"Project {project_id} not found")
             return
 
-        logger.info(f"Project found: {project.title}")
-        logger.info(f"Topic: {project.topic}")
+        logger.info(f"Project found: {project['title']}")
+        logger.info(f"Topic: {project['topic']}")
 
         # Load config
         config_path = os.path.join(
-            file_service.get_project_dir(project_id), "config.json"
+            file_service.projects_dir, project_id, "config.json"
         )
 
         with open(config_path, "r") as f:
