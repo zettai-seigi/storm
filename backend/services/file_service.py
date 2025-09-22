@@ -15,7 +15,7 @@ from datetime import datetime
 from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, Field
 import uuid
-from services.config_service import ProjectConfig
+from .config_service import ProjectConfig
 
 
 class ProjectMetadata(BaseModel):

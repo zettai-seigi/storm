@@ -11,7 +11,7 @@ from fastapi.responses import FileResponse
 import os
 from contextlib import asynccontextmanager
 
-from routers import projects, pipeline, docs, settings, models
+from .routers import projects, pipeline, docs, settings, models
 
 
 @asynccontextmanager
