@@ -18,7 +18,8 @@ export function mapConfigToBackend(config: StormConfig): any {
       top_p: config.llm?.topP || 1.0,
       frequency_penalty: config.llm?.frequencyPenalty || 0,
       presence_penalty: config.llm?.presencePenalty || 0,
-      api_key: config.llm?.apiKey,
+      // Don't send api_key - it's not in backend model and causes validation error
+      // api_key: config.llm?.apiKey,
       api_base: config.llm?.baseUrl,
       api_version: config.llm?.apiVersion,
       deployment_name: config.llm?.deploymentName,
@@ -34,7 +35,8 @@ export function mapConfigToBackend(config: StormConfig): any {
       min_relevance_score: config.retriever?.minRelevanceScore || 0.0,
       enable_reranking: config.retriever?.enableReranking || false,
       reranking_model: config.retriever?.rerankingModel,
-      api_key: config.retriever?.apiKey,
+      // Don't send api_key - it's not in backend model and causes validation error
+      // api_key: config.retriever?.apiKey,
     },
     pipeline: {
       do_research: config.pipeline?.doResearch ?? true, // Default true if undefined
@@ -100,7 +102,8 @@ export function mapConfigFromBackend(backendConfig: any): StormConfig {
           topP: backendConfig.llm.top_p,
           frequencyPenalty: backendConfig.llm.frequency_penalty,
           presencePenalty: backendConfig.llm.presence_penalty,
-          apiKey: backendConfig.llm.api_key,
+          // Don't expect api_key from backend
+          // apiKey: backendConfig.llm.api_key,
           baseUrl: backendConfig.llm.api_base,
           apiVersion: backendConfig.llm.api_version,
           deploymentName: backendConfig.llm.deployment_name,
@@ -117,7 +120,8 @@ export function mapConfigFromBackend(backendConfig: any): StormConfig {
           minRelevanceScore: backendConfig.retriever.min_relevance_score,
           enableReranking: backendConfig.retriever.enable_reranking,
           rerankingModel: backendConfig.retriever.reranking_model,
-          apiKey: backendConfig.retriever.api_key,
+          // Don't expect api_key from backend
+          // apiKey: backendConfig.retriever.api_key,
         }
       : undefined,
     pipeline: backendConfig.pipeline

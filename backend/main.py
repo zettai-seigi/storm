@@ -11,7 +11,7 @@ from fastapi.responses import FileResponse
 import os
 from contextlib import asynccontextmanager
 
-from .routers import projects, pipeline, docs, settings, models
+from routers import projects, pipeline, docs, settings, models
 
 
 @asynccontextmanager
@@ -107,5 +107,10 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
+    import logging
 
+    # Configure logging to reduce verbosity for specific endpoints
+    logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
+
+    # Keep error and startup logs visible
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True, log_level="info")

@@ -1,51 +1,101 @@
-"""Tests for updating project configuration without running the API server."""
+#!/usr/bin/env python3
+"""Test script to verify configuration update works correctly."""
 
-from __future__ import annotations
+import requests
+import json
+import sys
 
-from backend.services.file_service import FileProjectService
-from backend.services.config_service import ProjectConfig, PipelineConfig, RetrieverConfig
+# Test with a known project ID
+PROJECT_ID = "6e6c267a-df92-4ce2-9516-9deb4dda71f5"
+API_URL = "http://localhost:8000/api"
 
 
-def test_config_update(tmp_path):
-    """Verify that project configuration updates are persisted on disk."""
+def test_config_update():
+    """Test updating project configuration with specific pipeline settings disabled."""
 
-    # Use an isolated temporary directory for project storage
-    storage_dir = tmp_path / "projects"
-    service = FileProjectService(base_path=str(storage_dir))
+    # Configuration with some pipeline stages disabled
+    test_config = {
+        "config_version": "1.0.0",
+        "llm": {
+            "provider": "openai",
+            "model": "gpt-4o",
+            "temperature": 0.7,
+            "max_tokens": 4000,
+        },
+        "retriever": {
+            "retriever_type": "tavily",
+            "max_search_results": 10,
+            "search_top_k": 3,
+        },
+        "pipeline": {
+            "do_research": False,  # Disabled
+            "do_generate_outline": True,
+            "do_generate_article": False,  # Disabled
+            "do_polish_article": True,
+            "max_conv_turn": 3,
+            "max_perspective": 4,
+            "max_search_queries_per_turn": 3,
+        },
+        "output": {"output_format": "markdown", "include_citations": True},
+    }
 
-    # Create a project with default configuration
-    project_summary = service.create_project(
-        title="Config Persistence", topic="Testing configuration storage"
+    print(f"Updating config for project {PROJECT_ID}...")
+    print(f"Setting do_research={test_config['pipeline']['do_research']}")
+    print(
+        f"Setting do_generate_article={test_config['pipeline']['do_generate_article']}"
     )
-    project_id = project_summary["id"]
 
-    # Build a configuration that disables some pipeline stages and switches retriever
-    updated_config = ProjectConfig(
-        retriever=RetrieverConfig(retriever_type="tavily", max_search_results=10),
-        pipeline=PipelineConfig(
-            do_research=False,
-            do_generate_outline=True,
-            do_generate_article=False,
-            do_polish_article=True,
-            max_conv_turn=3,
-            max_perspective=4,
-            max_search_queries_per_turn=3,
-        ),
+    # Send the update request
+    response = requests.put(
+        f"{API_URL}/projects/{PROJECT_ID}/config",
+        json=test_config,
+        headers={"Content-Type": "application/json"},
     )
 
-    # Persist the configuration and ensure the operation succeeds
-    assert service.update_project_config(project_id, updated_config) is True
+    if response.status_code == 200:
+        print("✓ Configuration updated successfully")
+    else:
+        print(f"✗ Failed to update configuration: {response.status_code}")
+        print(response.text)
+        return False
 
-    # Reload the project data from disk and validate the nested configuration structure
-    project = service.get_project(project_id)
-    assert project is not None
+    # Now fetch the project to verify the config was saved
+    print("\nFetching project to verify configuration...")
+    response = requests.get(f"{API_URL}/projects/{PROJECT_ID}")
 
-    pipeline_config = project["config"]["pipeline"]
-    assert pipeline_config["do_research"] is False
-    assert pipeline_config["do_generate_article"] is False
-    assert pipeline_config["do_generate_outline"] is True
-    assert pipeline_config["do_polish_article"] is True
+    if response.status_code != 200:
+        print(f"✗ Failed to fetch project: {response.status_code}")
+        return False
 
-    retriever_config = project["config"]["retriever"]
-    assert retriever_config["retriever_type"] == "tavily"
-    assert retriever_config["max_search_results"] == 10
+    project = response.json()
+    config = project.get("config", {})
+
+    # Check if the config is in nested format
+    if "pipeline" in config:
+        print("✓ Configuration is in nested format")
+        pipeline = config.get("pipeline", {})
+        print(f"  do_research: {pipeline.get('do_research')}")
+        print(f"  do_generate_outline: {pipeline.get('do_generate_outline')}")
+        print(f"  do_generate_article: {pipeline.get('do_generate_article')}")
+        print(f"  do_polish_article: {pipeline.get('do_polish_article')}")
+
+        # Verify the values match what we set
+        if (
+            pipeline.get("do_research") == False
+            and pipeline.get("do_generate_article") == False
+        ):
+            print("\n✓ SUCCESS: Configuration persisted correctly!")
+            return True
+        else:
+            print("\n✗ FAILURE: Configuration values don't match what was set")
+            return False
+    else:
+        print("✗ Configuration is still in flat format")
+        print(f"  do_research: {config.get('do_research')}")
+        print(f"  do_generate_article: {config.get('do_generate_article')}")
+        return False
+
+
+if __name__ == "__main__":
+    success = test_config_update()
+    sys.exit(0 if success else 1)

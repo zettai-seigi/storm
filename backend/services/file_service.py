@@ -15,7 +15,7 @@ from datetime import datetime
 from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, Field
 import uuid
-from .config_service import ProjectConfig
+from services.config_service import ProjectConfig
 
 
 class ProjectMetadata(BaseModel):
@@ -392,12 +392,7 @@ class FileProjectService:
 
         config = self._load_project_config(project_id)
         # Debug: Log the config structure AFTER loading and conversion
-        import logging
-
-        logger = logging.getLogger(__name__)
-        logger.info(
-            f"Config for project {project_id} after loading (nested structure): {config.model_dump()}"
-        )
+        # Removed verbose config logging to reduce noise
         progress = self._load_project_progress(project_id)
         references = self._load_project_references(project_id)
 

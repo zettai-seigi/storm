@@ -527,6 +527,7 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
                   <Input
                     id="api-key"
                     type={showApiKeys ? 'text' : 'password'}
+                    autoComplete="new-password"
                     value={
                       localConfig.llm?.apiKey ||
                       (backendApiKeys &&
@@ -660,6 +661,7 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
                   <Input
                     id="retriever-api-key"
                     type={showApiKeys ? 'text' : 'password'}
+                    autoComplete="new-password"
                     value={
                       localConfig.retriever?.apiKey ||
                       (backendApiKeys &&

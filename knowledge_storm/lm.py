@@ -119,6 +119,18 @@ def cached_litellm_completion(request):
 
 def litellm_completion(request, cache={"no-cache": True, "no-store": True}):
     kwargs = ujson.loads(request)
+
+    # Handle GPT-5 special requirements
+    model = kwargs.get("model", "")
+    if "gpt-5" in model.lower():
+        # GPT-5 requires max_completion_tokens instead of max_tokens
+        if "max_tokens" in kwargs:
+            kwargs["max_completion_tokens"] = kwargs.pop("max_tokens")
+
+        # GPT-5 doesn't support custom temperature (only default 1.0)
+        if "temperature" in kwargs and kwargs["temperature"] != 1.0:
+            kwargs.pop("temperature")
+
     return litellm.completion(cache=cache, **kwargs)
 
 
@@ -283,6 +295,9 @@ class OpenAIModel(dspy.OpenAI):
         model_type: Literal["chat", "text"] = None,
         **kwargs,
     ):
+        # Force GPT-5 models to use chat type
+        if model_type is None and "gpt-5" in model.lower():
+            model_type = "chat"
         super().__init__(model=model, api_key=api_key, model_type=model_type, **kwargs)
         self._token_usage_lock = threading.Lock()
         self.prompt_tokens = 0
