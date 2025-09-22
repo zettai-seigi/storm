@@ -8,13 +8,13 @@ from fastapi import APIRouter, HTTPException, Query
 from typing import Dict, Any, Optional
 from pydantic import BaseModel
 
-from ..services.config_service import (
+from services.config_service import (
     ConfigurationService,
     ProjectConfig,
     ConfigLevel,
     get_config_service,
 )
-from ..services.llm_config_builder import LLMConfigBuilder
+from services.llm_config_builder import LLMConfigBuilder
 
 router = APIRouter(prefix="/api/config", tags=["configuration"])
 
@@ -179,7 +179,7 @@ async def get_provider_models(provider: str):
     # Special handling for Ollama - fetch models dynamically
     if provider == "ollama":
         import requests
-        from ..services.config_service import get_config_service
+        from services.config_service import get_config_service
 
         try:
             # Get Ollama configuration

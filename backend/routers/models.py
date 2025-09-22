@@ -4,7 +4,7 @@ Router for LLM model management endpoints
 
 from fastapi import APIRouter, HTTPException, Query
 from typing import Optional, Dict, List
-from ..services.llm_service import llm_service, LLMProvider, LLMModel
+from services.llm_service import llm_service, LLMProvider, LLMModel
 import logging
 
 logger = logging.getLogger(__name__)

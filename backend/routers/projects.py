@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field
 from uuid import UUID
 import logging
 
-from ..services.file_service import FileProjectService, ProjectConfig
+from services.file_service import FileProjectService, ProjectConfig
 
 # Configure logging
 logger = logging.getLogger(__name__)

@@ -17,8 +17,8 @@ import asyncio
 import json
 import logging
 
-from ..services.file_service import FileProjectService, ProjectConfig, ProgressData
-from ..services.storm_runner import StormRunnerService
+from services.file_service import FileProjectService, ProjectConfig, ProgressData
+from services.storm_runner import StormRunnerService
 
 # Configure logging
 logger = logging.getLogger(__name__)
