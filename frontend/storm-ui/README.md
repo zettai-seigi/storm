@@ -1,681 +1,742 @@
-# STORM UI - Modern Web Interface for STORM
+# STORM UI
 
-⚠️ **Current Status**: Component library ready, application structure in development
+A modern, responsive web interface for the STORM (Synthesis of Topic Outlines through Retrieval and Multi-perspective question asking) knowledge curation system. Built with Next.js 14, TypeScript, and Tailwind CSS.
 
-This project aims to create a comprehensive web-based UI for STORM that replaces the current Streamlit demo with a modern React/Next.js application. Currently, the component library is complete, but the application structure and backend need to be implemented.
+![STORM UI Dashboard](https://img.shields.io/badge/version-0.1.0-blue.svg)
+![Next.js](https://img.shields.io/badge/Next.js-14.0-black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-## 🎯 Implementation Roadmap
+## Overview
 
-### Phase 1: MVP Implementation (2-3 weeks)
+STORM UI is a comprehensive web application that provides an intuitive interface for AI-powered article generation and collaborative knowledge curation. It serves as the frontend for the STORM system, enabling users to generate Wikipedia-quality articles through multi-perspective research and AI-driven content synthesis.
 
-- [ ] Backend API setup (FastAPI with file-based storage)
-- [ ] Next.js application structure
-- [ ] Core STORM pipeline integration
-- [ ] Basic project management
-- [ ] Article generation and display
+### Key Features
 
-### Phase 2: Advanced Features (3-4 weeks)
+- 🚀 **Automated Article Generation** - Generate comprehensive articles from any topic
+- 🔍 **Multi-Source Research** - Integrate multiple search engines and data sources
+- 👥 **Collaborative Editing** (Co-STORM) - Real-time collaboration with AI experts
+- 📊 **Pipeline Visualization** - Track progress through each generation stage
+- 📝 **Rich Text Editing** - Full-featured editor with citation management
+- 📈 **Analytics Dashboard** - Monitor usage, costs, and performance metrics
+- 🎨 **Modern UI/UX** - Clean, responsive design with dark mode support
+- 🔐 **Secure Configuration** - Safe API key management and storage
 
-- [ ] Co-STORM collaborative features
-- [ ] Interactive mind map
-- [ ] Analytics dashboard
-- [ ] Export functionality
-- [ ] Batch processing
+## Table of Contents
 
-## 🏗️ Current Project Structure
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Architecture](#architecture)
+- [Development](#development)
+- [API Integration](#api-integration)
+- [Configuration](#configuration)
+- [Testing](#testing)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [License](#license)
 
-### What's Already Built ✅
+## Features
 
-```
-src/
-├── components/          # React components (READY)
-│   ├── ui/             # Base UI components (shadcn/ui)
-│   ├── storm/          # STORM-specific components
-│   ├── analytics/      # Analytics dashboard components
-│   ├── visualization/  # Mind map and visualizations
-│   └── ux/            # Advanced UX components
-├── services/           # API service clients (READY)
-├── store/             # State management (Zustand) (READY)
-├── hooks/             # React hooks (READY)
-├── types/             # TypeScript definitions (READY)
-└── utils/             # Utilities and animations (READY)
-```
+### Core Functionality
 
-### What Needs to Be Built 🚧
+#### 1. Project Management
+- Create, edit, and delete article generation projects
+- Project templates for common use cases
+- Batch processing for multiple articles
+- Project search and filtering
+- Export/import project configurations
 
-```
-app/                    # Next.js app directory (TO BUILD)
-├── layout.tsx         # Root layout
-├── page.tsx           # Home/dashboard
-├── projects/          # Project management
-├── pipeline/          # Pipeline execution
-└── api/               # API routes
+#### 2. Article Generation Pipeline
+The STORM pipeline consists of four main stages:
 
-backend/               # FastAPI backend (TO BUILD)
-├── main.py           # FastAPI application
-├── services/         # Business logic
-│   └── file_service.py  # File-based storage
-├── routers/          # API endpoints
-└── storm_integration/ # STORM runner integration
+- **Research Phase**: Automated multi-perspective research using configured search engines
+- **Outline Generation**: Hierarchical topic organization based on research
+- **Article Writing**: Section-by-section content generation with citations
+- **Polish & Review**: Final editing, summary generation, and quality checks
 
-storm-projects/        # File-based storage (TO CREATE)
-├── projects.json     # Project index
-└── projects/         # Individual projects
-    └── [project-id]/
-        ├── project.md      # Article content
-        ├── config.json     # Pipeline config
-        ├── progress.json   # Progress tracking
-        └── research/       # Research data
-```
+#### 3. Configuration System
+- **LLM Configuration**: Support for multiple providers (OpenAI, Anthropic, Azure, etc.)
+- **Retriever Setup**: Configure search engines (Bing, You.com, Tavily, DuckDuckGo)
+- **Pipeline Customization**: Control which stages to run and their parameters
+- **Template Management**: Save and reuse configurations
 
-## 📋 Complete Implementation Guide
+#### 4. Research Visualization
+- View simulated expert conversations
+- Browse and manage information sources
+- Citation tracking and verification
+- Source credibility indicators
+- Research timeline and history
 
-### Step 1: Backend Setup (File-Based, No Database)
+#### 5. Collaborative Features (Co-STORM)
+- Real-time discourse with AI experts
+- Interactive mind map visualization
+- Dynamic question generation
+- Shared knowledge base
+- Session recording and playback
 
-#### 1.1 Create Backend Structure
+#### 6. Export & Integration
+- Multiple export formats (Markdown, HTML, PDF, DOCX)
+- API access for programmatic usage
+- Webhook notifications
+- Integration with external knowledge bases
 
-```bash
-cd ../../  # Go to storm root
-mkdir backend
-cd backend
+### User Interface
 
-# Create FastAPI backend
-pip install fastapi uvicorn python-frontmatter pydantic
-```
+#### Dashboard
+- Project overview with status indicators
+- Recent activity feed
+- Quick actions toolbar
+- Usage statistics
+- System health monitoring
 
-#### 1.2 Create `backend/main.py`
+#### Editor Features
+- Rich text editing with TipTap
+- Real-time preview
+- Citation management
+- Table of contents generation
+- Version history
+- Collaborative editing indicators
 
-```python
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from routers import projects, pipeline
-import os
+#### Visualization Components
+- Pipeline progress tracking
+- Mind map for knowledge organization
+- Analytics charts and graphs
+- Source relationship diagrams
 
-app = FastAPI(title="STORM UI API")
+## Installation
 
-# CORS for Next.js frontend
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Include routers
-app.include_router(projects.router, prefix="/api/projects")
-app.include_router(pipeline.router, prefix="/api/pipeline")
-
-@app.get("/api/health")
-def health_check():
-    return {"status": "healthy"}
-```
-
-#### 1.3 Create File Service (`backend/services/file_service.py`)
-
-```python
-import os
-import json
-import frontmatter
-from pathlib import Path
-from datetime import datetime
-from typing import List, Optional
-
-class FileProjectService:
-    def __init__(self, base_path: str = "./storm-projects"):
-        self.base_path = Path(base_path)
-        self.projects_dir = self.base_path / "projects"
-        self.index_file = self.base_path / "projects.json"
-        self._ensure_directories()
-
-    def create_project(self, title: str, topic: str) -> dict:
-        # Implementation as shown in previous examples
-        pass
-
-    def list_projects(self) -> List[dict]:
-        # Read from index file
-        pass
-
-    def update_article(self, project_id: str, content: str):
-        # Update markdown file
-        pass
-```
-
-#### 1.4 Run Backend
+### Quick Start
 
 ```bash
-cd backend
-uvicorn main:app --reload --port 8000
+# Clone and install
+git clone https://github.com/zettai-seigi/storm.git
+cd storm/frontend/storm-ui
+npm install
+
+# Configure environment
+cp .env.example .env.local
+
+# Start development server
+npm run dev
 ```
 
-### Step 2: Next.js Application Setup
+For detailed installation instructions, see [INSTALL.md](./INSTALL.md).
 
-#### 2.1 Create App Directory Structure
+## Usage
+
+### Creating Your First Article
+
+1. **Start the Application**
+   ```bash
+   npm run dev
+   # Navigate to http://localhost:3000
+   ```
+
+2. **Configure API Keys**
+   - Go to Settings → API Configuration
+   - Add your OpenAI API key
+   - Add at least one search API key (Bing, Tavily, etc.)
+
+3. **Create a New Project**
+   - Click "New Project" on the dashboard
+   - Enter your topic and description
+   - Select a configuration template or customize settings
+   - Click "Create Project"
+
+4. **Run the Pipeline**
+   - Open your project from the dashboard
+   - Click "Start Pipeline" to begin generation
+   - Monitor progress in real-time
+   - Review and edit the generated article
+
+5. **Export Your Article**
+   - Click "Export" in the article editor
+   - Choose your format (Markdown, HTML, PDF)
+   - Download or share your article
+
+### Advanced Usage
+
+#### Using Co-STORM for Collaboration
+
+```typescript
+// Example: Starting a Co-STORM session
+const session = await createCoStormSession({
+  topic: "Quantum Computing",
+  experts: ["Physics Professor", "Tech Industry Expert"],
+  humanModerator: true
+});
+```
+
+#### Batch Processing
 
 ```bash
-cd frontend/storm-ui
-mkdir -p app/{projects,api}
-
-# Create root layout
-touch app/layout.tsx
-touch app/page.tsx
-touch app/globals.css
+# Process multiple topics from a CSV file
+npm run batch -- --input topics.csv --template academic --output ./articles
 ```
 
-#### 2.2 Create `app/layout.tsx`
+#### API Integration
 
-```tsx
-import { Inter } from 'next/font/google';
-import './globals.css';
+```typescript
+// Example: Using the STORM API
+import { StormClient } from '@/services/api';
 
-const inter = Inter({ subsets: ['latin'] });
+const client = new StormClient({
+  apiUrl: process.env.NEXT_PUBLIC_API_URL,
+  apiKey: process.env.API_KEY
+});
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
-    </html>
-  );
-}
+const project = await client.createProject({
+  title: "Climate Change Impacts",
+  config: {
+    llm: { model: "gpt-4", temperature: 0.7 },
+    retriever: { type: "bing", maxResults: 20 }
+  }
+});
+
+await client.runPipeline(project.id);
 ```
 
-#### 2.3 Create `app/page.tsx` (Projects Dashboard)
+## Architecture
 
-```tsx
-'use client';
-import { useEffect, useState } from 'react';
-import { ProjectCard } from '@/components/storm';
-import { Button } from '@/components/ui';
+### Technology Stack
 
-export default function ProjectsPage() {
-  const [projects, setProjects] = useState([]);
+#### Frontend
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript 5.0
+- **Styling**: Tailwind CSS + shadcn/ui components
+- **State Management**: Zustand
+- **Data Fetching**: TanStack Query (React Query)
+- **Forms**: React Hook Form + Zod validation
+- **Rich Text**: TipTap Editor
+- **Charts**: Recharts
+- **Visualizations**: D3.js
+
+#### Backend Integration
+- **API**: RESTful endpoints via Axios
+- **WebSocket**: Real-time updates for pipeline progress
+- **File Storage**: Local file system or cloud storage
+- **Authentication**: JWT tokens (optional)
+
+### Project Structure
+
+```
+storm-ui/
+├── app/                    # Next.js App Router pages
+│   ├── layout.tsx         # Root layout with navigation
+│   ├── page.tsx           # Home page (redirects to dashboard)
+│   ├── projects/          # Project management pages
+│   ├── analytics/         # Analytics dashboard
+│   ├── settings/          # Configuration pages
+│   └── api/              # API route handlers
+├── src/
+│   ├── components/        # React components
+│   │   ├── storm/        # STORM-specific components
+│   │   ├── ui/           # Base UI components (shadcn)
+│   │   ├── layout/       # Layout components
+│   │   └── visualization/ # Charts and graphs
+│   ├── services/         # API client services
+│   ├── store/           # Zustand state stores
+│   ├── hooks/           # Custom React hooks
+│   ├── lib/             # Utility functions
+│   ├── types/           # TypeScript definitions
+│   └── styles/          # Global styles
+├── public/              # Static assets
+├── tests/               # Test files
+└── config/              # Configuration files
+```
+
+### Component Architecture
+
+```typescript
+// Example: Component composition pattern
+<DashboardLayout>
+  <ProjectList>
+    <ProjectCard />
+    <ProjectCard />
+  </ProjectList>
+  <Sidebar>
+    <QuickActions />
+    <RecentActivity />
+  </Sidebar>
+</DashboardLayout>
+```
+
+### State Management
+
+The application uses Zustand for state management with the following stores:
+
+- **projectStore**: Project CRUD operations and caching
+- **pipelineStore**: Pipeline execution and progress tracking
+- **configStore**: User preferences and API configurations
+- **uiStore**: UI state (modals, sidebars, themes)
+- **analyticsStore**: Usage metrics and statistics
+
+```typescript
+// Example: Using Zustand store
+import { useProjectStore } from '@/store/projectStore';
+
+function ProjectList() {
+  const { projects, loading, fetchProjects } = useProjectStore();
 
   useEffect(() => {
-    fetch('http://localhost:8000/api/projects')
-      .then(res => res.json())
-      .then(setProjects);
+    fetchProjects();
   }, []);
 
   return (
-    <div className="container mx-auto p-6">
-      <h1>STORM Projects</h1>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {projects.map(project => (
-          <ProjectCard key={project.id} project={project} />
-        ))}
-      </div>
+    <div>
+      {projects.map(project => (
+        <ProjectCard key={project.id} project={project} />
+      ))}
     </div>
   );
 }
 ```
 
-### Step 3: STORM Integration
+## Development
 
-#### 3.1 Create STORM Runner Service (`backend/services/storm_runner.py`)
-
-```python
-from knowledge_storm import STORMWikiRunner, STORMWikiLMConfigs
-import asyncio
-import json
-
-class StormRunnerService:
-    def __init__(self, file_service):
-        self.file_service = file_service
-
-    async def run_pipeline(self, project_id: str, config: dict):
-        # Initialize STORM runner
-        lm_configs = STORMWikiLMConfigs()
-
-        # Configure based on user settings
-        engine_args = {
-            'output_dir': f'./storm-projects/projects/{project_id}',
-            'max_conv_turn': config.get('max_conv_turn', 3),
-            'max_perspective': config.get('max_perspective', 4),
-        }
-
-        runner = STORMWikiRunner(engine_args, lm_configs)
-
-        # Update progress periodically
-        await self._update_progress(project_id, 'research', 0)
-
-        # Run pipeline stages
-        runner.run(
-            topic=config['topic'],
-            do_research=True,
-            do_generate_outline=True,
-            do_generate_article=True,
-            do_polish_article=True
-        )
-
-        # Save results
-        await self._save_results(project_id, runner)
-```
-
-### Step 4: Run the Complete System
-
-```bash
-# Terminal 1: Run backend
-cd backend
-uvicorn main:app --reload
-
-# Terminal 2: Run frontend
-cd frontend/storm-ui
-npm run dev
-```
-
-## 🚀 Getting Started (Current State)
-
-### For Component Development Only
+### Setup Development Environment
 
 ```bash
 # Install dependencies
 npm install
 
-# Run Storybook to view components
-npm run storybook
+# Run development server
+npm run dev
 
-# Run tests
-npm test
+# Run with debug logging
+DEBUG=storm:* npm run dev
 ```
 
-### Prerequisites
+### Available Scripts
 
-- Node.js 18+
-- Python 3.11+ (for backend)
-- React 18+
-- Next.js 14+
-
-## 📦 Components
-
-### Core STORM Components
-
-#### ProjectCard
-
-Display STORM projects with status, progress, and actions.
-
-```tsx
-import { ProjectCard } from '@/components/storm';
-
-const project = {
-  id: 'project-1',
-  title: 'Climate Change Impact',
-  topic: 'Environmental Science',
-  status: 'researching',
-  // ... other project properties
-};
-
-<ProjectCard
-  project={project}
-  onSelect={project => console.log('Selected:', project)}
-  onDelete={id => console.log('Delete:', id)}
-  onDuplicate={project => console.log('Duplicate:', project)}
-/>;
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
+npm run lint         # Run ESLint
+npm run type-check   # TypeScript type checking
+npm run format       # Format with Prettier
+npm run test         # Run tests
+npm run test:watch   # Run tests in watch mode
+npm run test:e2e     # Run E2E tests
+npm run storybook    # Start Storybook
+npm run analyze      # Analyze bundle size
 ```
 
-#### PipelineProgress
+### Code Style Guide
 
-Track and display STORM pipeline execution progress.
+#### TypeScript Conventions
 
-```tsx
-import { PipelineProgress } from '@/components/storm';
+```typescript
+// Use interface for object types
+interface ProjectConfig {
+  llm: LLMConfig;
+  retriever: RetrieverConfig;
+}
 
-const progress = {
-  stage: 'research',
-  stageProgress: 45,
-  overallProgress: 25,
-  startTime: new Date(),
-  currentTask: 'Conducting research...',
-};
+// Use type for unions and primitives
+type ProjectStatus = 'draft' | 'running' | 'completed' | 'failed';
 
-<PipelineProgress
-  progress={progress}
-  showDetails={true}
-  onCancel={() => console.log('Cancelled')}
-/>;
+// Use const assertions for constants
+const PIPELINE_STAGES = ['research', 'outline', 'write', 'polish'] as const;
+
+// Prefer nullish coalescing over logical OR
+const value = config.temperature ?? 0.7; // Not: config.temperature || 0.7
 ```
 
-#### ConfigurationPanel
+#### Component Patterns
 
-Configure LLM models, retrievers, and pipeline settings.
+```typescript
+// Functional component with TypeScript
+interface ProjectCardProps {
+  project: Project;
+  onSelect?: (id: string) => void;
+  className?: string;
+}
 
-```tsx
-import { ConfigurationPanel } from '@/components/storm';
-
-const config = {
-  llm: {
-    model: 'gpt-4o',
-    provider: 'openai',
-    temperature: 0.7,
-  },
-  retriever: {
-    type: 'bing',
-    maxResults: 10,
-  },
-  pipeline: {
-    doResearch: true,
-    doGenerateOutline: true,
-    doGenerateArticle: true,
-    doPolishArticle: true,
-  },
-};
-
-<ConfigurationPanel
-  config={config}
-  onChange={newConfig => setConfig(newConfig)}
-  onSave={() => console.log('Saved')}
-  onCancel={() => console.log('Cancelled')}
-/>;
-```
-
-#### ArticleEditor
-
-Rich text editor for STORM-generated articles with citation support.
-
-```tsx
-import { ArticleEditor } from '@/components/storm';
-
-const article = {
-  title: 'Article Title',
-  content: '<h1>Article Content</h1><p>Body text...</p>',
-  sections: [...],
-  citations: [...],
-  wordCount: 1500,
-  lastModified: new Date(),
-};
-
-<ArticleEditor
-  article={article}
-  onChange={(updatedArticle) => setArticle(updatedArticle)}
-  onSave={() => console.log('Article saved')}
-  showOutline={true}
-/>
-```
-
-#### OutlineEditor
-
-Drag-and-drop hierarchical outline editor.
-
-```tsx
-import { OutlineEditor } from '@/components/storm';
-
-const outline = {
-  id: 'outline-1',
-  sections: [
-    {
-      id: 'section-1',
-      title: 'Introduction',
-      level: 1,
-      order: 1,
-      isExpanded: true,
-    },
-    // ... more sections
-  ],
-  lastModified: new Date(),
-};
-
-<OutlineEditor
-  outline={outline}
-  onChange={updatedOutline => setOutline(updatedOutline)}
-  onSave={() => console.log('Outline saved')}
-  readOnly={false}
-/>;
-```
-
-#### ResearchView
-
-Display research conversations and sources with filtering.
-
-```tsx
-import { ResearchView } from '@/components/storm';
-
-const research = {
-  conversations: [...],
-  sources: [...],
-  perspectives: ['Academic', 'Industry Expert'],
-  totalQueries: 25,
-  lastUpdated: new Date(),
-};
-
-<ResearchView
-  research={research}
-  onSourceSelect={(source) => console.log('Source:', source)}
-  onConversationSelect={(conv) => console.log('Conversation:', conv)}
-  showFilters={true}
-/>
-```
-
-### Base UI Components
-
-Built on top of shadcn/ui and Radix UI primitives:
-
-- `Button` - Various button styles and sizes
-- `Card` - Container component with header, content, footer
-- `Input` - Form input with validation support
-- `Select` - Dropdown selection component
-- `Progress` - Progress bar with animations
-- `Badge` - Status indicators and labels
-- `Tabs` - Tabbed interface component
-- `Accordion` - Collapsible content sections
-- And many more...
-
-## 🎨 Styling
-
-This library uses:
-
-- **Tailwind CSS** for utility-first styling
-- **CSS Variables** for theme customization
-- **Dark/Light mode** support
-- **Custom STORM theme colors**
-
-### Theme Customization
-
-```css
-:root {
-  --storm-blue: #0066cc;
-  --storm-blue-light: #4d94ff;
-  --storm-blue-dark: #004499;
-  --storm-orange: #ff6b35;
+export function ProjectCard({
+  project,
+  onSelect,
+  className
+}: ProjectCardProps) {
+  return (
+    <Card className={cn("cursor-pointer", className)}>
+      {/* Component content */}
+    </Card>
+  );
 }
 ```
 
-## 🧪 Testing
+#### File Naming Conventions
 
-Comprehensive test suite with:
+- Components: PascalCase (e.g., `ProjectCard.tsx`)
+- Utilities: camelCase (e.g., `formatDate.ts`)
+- Types: PascalCase with `.types.ts` extension
+- Tests: Same name with `.test.ts` or `.spec.ts`
+- Stories: Same name with `.stories.tsx`
 
-- **Jest** for test runner
-- **React Testing Library** for component testing
-- **TypeScript** support in tests
-- **Coverage reporting**
+### Git Workflow
 
-### Running Tests
+```bash
+# Create feature branch
+git checkout -b feature/your-feature
+
+# Make changes and commit
+git add .
+git commit -m "feat: Add new feature"
+
+# Push and create PR
+git push origin feature/your-feature
+```
+
+#### Commit Message Convention
+
+Follow conventional commits:
+- `feat:` New feature
+- `fix:` Bug fix
+- `docs:` Documentation
+- `style:` Code style changes
+- `refactor:` Code refactoring
+- `test:` Test changes
+- `chore:` Build/config changes
+
+## API Integration
+
+### Backend Requirements
+
+The STORM UI requires the backend API to be running. The backend provides:
+
+- Project CRUD operations
+- Pipeline execution
+- WebSocket connections for real-time updates
+- File storage and retrieval
+- API key validation
+
+### API Endpoints
+
+```typescript
+// Core API endpoints
+GET    /api/projects              // List projects
+POST   /api/projects              // Create project
+GET    /api/projects/:id          // Get project
+PUT    /api/projects/:id          // Update project
+DELETE /api/projects/:id          // Delete project
+
+POST   /api/pipeline/start        // Start pipeline
+GET    /api/pipeline/status/:id   // Get pipeline status
+POST   /api/pipeline/stop         // Stop pipeline
+
+GET    /api/config/templates      // Get config templates
+POST   /api/config/validate       // Validate configuration
+
+GET    /api/export/:projectId     // Export article
+POST   /api/research/search       // Manual search
+```
+
+### WebSocket Events
+
+```typescript
+// WebSocket event types
+interface PipelineEvent {
+  type: 'progress' | 'stage_complete' | 'error' | 'complete';
+  projectId: string;
+  data: {
+    stage: string;
+    progress: number;
+    message?: string;
+    error?: string;
+  };
+}
+
+// Subscribe to pipeline events
+ws.on('pipeline:progress', (event: PipelineEvent) => {
+  updateProgress(event.data);
+});
+```
+
+## Configuration
+
+### Environment Variables
+
+```env
+# Required
+NEXT_PUBLIC_API_URL=http://localhost:8000/api
+NEXT_PUBLIC_WS_URL=ws://localhost:8000
+
+# Optional
+NEXT_PUBLIC_ENABLE_ANALYTICS=true
+NEXT_PUBLIC_ENABLE_COSTORM=true
+NEXT_PUBLIC_MAX_FILE_SIZE=10485760
+NEXT_PUBLIC_ALLOWED_FILE_TYPES=.txt,.pdf,.md
+NEXT_PUBLIC_SESSION_TIMEOUT=3600000
+```
+
+### Feature Flags
+
+```typescript
+// config/features.ts
+export const features = {
+  coStorm: process.env.NEXT_PUBLIC_ENABLE_COSTORM === 'true',
+  analytics: process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === 'true',
+  export: {
+    pdf: true,
+    docx: true,
+    markdown: true,
+    html: true
+  },
+  collaboration: {
+    enabled: false,
+    maxUsers: 10
+  }
+};
+```
+
+### API Configuration
+
+```typescript
+// config/api.ts
+export const apiConfig = {
+  timeout: 30000,
+  retries: 3,
+  retryDelay: 1000,
+  maxConcurrent: 5,
+
+  endpoints: {
+    base: process.env.NEXT_PUBLIC_API_URL,
+    ws: process.env.NEXT_PUBLIC_WS_URL
+  },
+
+  headers: {
+    'Content-Type': 'application/json',
+    'X-Client-Version': '0.1.0'
+  }
+};
+```
+
+## Testing
+
+### Unit Tests
 
 ```bash
 # Run all tests
 npm test
 
-# Watch mode
-npm run test:watch
-
-# Coverage report
+# Run with coverage
 npm run test:coverage
 
-# Type checking
-npm run type-check
+# Run specific test file
+npm test ProjectCard.test.tsx
+
+# Run in watch mode
+npm run test:watch
 ```
 
-### Writing Tests
+### E2E Tests
 
-```tsx
-import { render, screen, fireEvent } from '@/test/utils';
-import { ProjectCard } from '../ProjectCard';
-import { createMockStormProject } from '@/test/utils';
+```bash
+# Install Playwright
+npx playwright install
+
+# Run E2E tests
+npm run test:e2e
+
+# Run with UI
+npm run test:e2e:ui
+
+# Run specific browser
+npm run test:e2e -- --project=chromium
+```
+
+### Test Structure
+
+```typescript
+// Example test file
+import { render, screen, fireEvent } from '@testing-library/react';
+import { ProjectCard } from './ProjectCard';
 
 describe('ProjectCard', () => {
-  it('renders project information', () => {
-    const project = createMockStormProject();
-    render(<ProjectCard project={project} onSelect={jest.fn()} />);
+  it('should render project title', () => {
+    const project = {
+      id: '1',
+      title: 'Test Project',
+      status: 'draft'
+    };
 
-    expect(screen.getByText(project.title)).toBeInTheDocument();
+    render(<ProjectCard project={project} />);
+    expect(screen.getByText('Test Project')).toBeInTheDocument();
+  });
+
+  it('should call onSelect when clicked', () => {
+    const onSelect = jest.fn();
+    const project = { id: '1', title: 'Test' };
+
+    render(<ProjectCard project={project} onSelect={onSelect} />);
+    fireEvent.click(screen.getByRole('article'));
+
+    expect(onSelect).toHaveBeenCalledWith('1');
   });
 });
 ```
 
-## 📝 TypeScript Support
+## Deployment
 
-Full TypeScript support with:
-
-- **Strict type checking**
-- **Interface definitions** for all STORM data structures
-- **Generic components** where appropriate
-- **Type-safe props** and callbacks
-
-### Key Types
-
-```typescript
-import type {
-  StormProject,
-  PipelineProgress,
-  StormConfig,
-  ArticleOutline,
-  ResearchData,
-} from '@/types';
-```
-
-## 🚀 Production Deployment
-
-### Building for Production
+### Production Build
 
 ```bash
-# Build the components
+# Build for production
 npm run build
 
-# Lint the code
-npm run lint
+# Test production build locally
+npm start
 
-# Type check
-npm run type-check
+# Analyze bundle size
+npm run analyze
 ```
 
-### Integration
+### Docker Deployment
 
-To use these components in your Next.js application:
+```bash
+# Build Docker image
+docker build -t storm-ui:latest .
 
-1. Copy the `src/components` directory to your project
-2. Install required dependencies from `package.json`
-3. Configure Tailwind CSS with the provided config
-4. Import and use components as needed
-
-```tsx
-import { ProjectCard, PipelineProgress } from '@/components/storm';
+# Run container
+docker run -p 3000:3000 storm-ui:latest
 ```
 
-## 📚 API Reference
+### Vercel Deployment
 
-### Component Props
+```bash
+# Install Vercel CLI
+npm i -g vercel
 
-All components are fully documented with TypeScript interfaces. See the individual component files for detailed prop definitions and usage examples.
+# Deploy
+vercel
 
-### Utility Functions
-
-Located in `src/lib/utils.ts`:
-
-- `cn()` - Conditional class name utility
-- `formatDate()` - Date formatting
-- `formatRelativeTime()` - Relative time formatting
-- `getProjectStatusColor()` - Status color mapping
-- `estimateReadingTime()` - Reading time calculation
-
-## 🤝 Contributing
-
-1. Follow the existing code style and patterns
-2. Add tests for new components
-3. Update TypeScript types as needed
-4. Ensure accessibility compliance
-5. Test with both light and dark themes
-
-## 🎯 MVP Features (When Complete)
-
-### Core Functionality
-
-- ✅ **Project Management**: Create, view, delete projects with file-based storage
-- ✅ **Pipeline Configuration**: Configure LLM models and retrievers through UI
-- ✅ **Pipeline Execution**: Run STORM pipeline with real-time progress tracking
-- ✅ **Article Display**: View generated articles with citations and export options
-- ✅ **Research Visibility**: View conversations and sources from research phase
-
-### File-Based Storage Structure
-
-```
-storm-projects/
-├── projects.json              # Project index
-└── projects/
-    └── [project-id]/
-        ├── project.md         # Article content with frontmatter
-        ├── config.json        # Pipeline configuration
-        ├── progress.json      # Real-time progress updates
-        └── research/
-            ├── conversations.md  # Research conversations
-            └── sources.json      # Retrieved sources
+# Deploy to production
+vercel --prod
 ```
 
-### Why File-Based?
+### Environment-Specific Configuration
 
-- **No database required**: Simpler deployment and maintenance
-- **Version control friendly**: All content in markdown/JSON
-- **Portable**: Easy backup and migration
-- **Human readable**: Direct file access for debugging
-- **Existing STORM compatibility**: Works with current file outputs
+```javascript
+// next.config.js
+module.exports = {
+  env: {
+    API_URL: process.env.VERCEL_ENV === 'production'
+      ? 'https://api.storm.example.com'
+      : 'http://localhost:8000'
+  }
+};
+```
 
-## 📊 Implementation Status
+### Performance Optimization
 
-| Component         | Status         | Notes                    |
-| ----------------- | -------------- | ------------------------ |
-| UI Components     | ✅ Complete    | All components ready     |
-| State Management  | ✅ Complete    | Zustand store configured |
-| Service Layer     | ✅ Complete    | API clients ready        |
-| Backend API       | ❌ Not Started | FastAPI server needed    |
-| Next.js Pages     | ❌ Not Started | App directory needed     |
-| STORM Integration | ❌ Not Started | Runner service needed    |
-| File Storage      | ❌ Not Started | File service needed      |
+1. **Image Optimization**
+   - Use Next.js Image component
+   - Implement lazy loading
+   - Optimize image formats (WebP, AVIF)
 
-## 🔧 Development Workflow
+2. **Code Splitting**
+   - Dynamic imports for large components
+   - Route-based code splitting
+   - Lazy load heavy dependencies
 
-1. **Backend Development**
+3. **Caching Strategy**
+   - Implement SWR for data fetching
+   - Use React Query for server state
+   - Configure proper cache headers
 
+4. **Bundle Optimization**
+   - Tree shaking unused code
+   - Minimize and compress assets
+   - Use CDN for static assets
+
+## Contributing
+
+We welcome contributions! Please see our [Contributing Guide](../../CONTRIBUTING.md) for details.
+
+### Development Setup
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+### Code Review Process
+
+1. All code must pass CI checks
+2. Requires at least one approval
+3. Must include tests for new features
+4. Documentation updates required for API changes
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Module not found errors**
    ```bash
-   cd backend
-   pip install -r requirements.txt
-   uvicorn main:app --reload
-   ```
-
-2. **Frontend Development**
-
-   ```bash
-   cd frontend/storm-ui
+   rm -rf node_modules package-lock.json
    npm install
-   npm run dev
    ```
 
-3. **Testing**
-
+2. **Build errors**
    ```bash
-   # Frontend tests
-   npm test
-
-   # Backend tests
-   pytest
+   rm -rf .next
+   npm run build
    ```
 
-## 📄 License
+3. **API connection issues**
+   - Check backend is running on correct port
+   - Verify CORS configuration
+   - Check network tab for error details
 
-This component library is part of the STORM project. Please refer to the main project license for usage terms.
+4. **Performance issues**
+   - Enable production mode
+   - Check for memory leaks
+   - Profile with React DevTools
 
-## 🔗 Related
+For more troubleshooting tips, see [INSTALL.md](./INSTALL.md#troubleshooting).
 
-- [STORM Main Repository](https://github.com/stanford-oval/storm)
-- [Current Working UI (Streamlit)](../demo_light)
-- [shadcn/ui Documentation](https://ui.shadcn.com/)
-- [FastAPI Documentation](https://fastapi.tiangolo.com/)
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](../../LICENSE) file for details.
+
+## Acknowledgments
+
+- Stanford OVAL team for the original STORM research
+- The open-source community for amazing tools and libraries
+- Contributors and testers who helped improve the project
+
+## Support
+
+- **Documentation**: [STORM Documentation](https://github.com/stanford-oval/storm)
+- **Issues**: [GitHub Issues](https://github.com/zettai-seigi/storm/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/zettai-seigi/storm/discussions)
+
+## Roadmap
+
+### Version 0.2.0 (Q1 2025)
+- [ ] Real-time collaboration features
+- [ ] Advanced analytics dashboard
+- [ ] Plugin system for custom components
+- [ ] Mobile responsive improvements
+
+### Version 0.3.0 (Q2 2025)
+- [ ] Multi-language support
+- [ ] Advanced export options
+- [ ] AI model fine-tuning interface
+- [ ] Enterprise features
+
+### Future Considerations
+- GraphQL API support
+- Offline mode with service workers
+- Browser extension
+- Native mobile apps
+
+---
+
+Built with ❤️ by the STORM community
+
+
