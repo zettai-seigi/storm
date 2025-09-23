@@ -225,7 +225,7 @@ export default function ProjectsPage() {
 
   return (
     <AnimatedPage>
-      <ResponsiveContainer className="space-y-6 py-6">
+      <ResponsiveContainer className="space-y-6 px-4 py-6 md:px-6 lg:px-8">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -241,7 +241,7 @@ export default function ProjectsPage() {
         </div>
 
         {/* Statistics Cards */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
@@ -292,10 +292,10 @@ export default function ProjectsPage() {
         </div>
 
         {/* Filters, Search and Pagination - All in one row */}
-        <div className="flex flex-col items-start justify-between gap-4 xl:flex-row xl:items-center">
+        <div className="flex flex-col items-start justify-between gap-6 xl:flex-row xl:items-center xl:gap-8">
           {/* Left side: Search */}
           <div className="flex min-w-0 flex-1 items-center space-x-2">
-            <div className="relative max-w-sm flex-1">
+            <div className="relative w-full max-w-md">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
               <Input
                 placeholder="Search projects..."
@@ -378,12 +378,12 @@ export default function ProjectsPage() {
         <Separator />
 
         {/* Main Content with Recent Activity */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-4 lg:gap-8">
           {/* Projects Grid */}
-          <div className="space-y-4 lg:col-span-2">
+          <div className="space-y-6 lg:col-span-3">
             {loading ? (
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                {Array.from({ length: 4 }).map((_, i) => (
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+                {Array.from({ length: 6 }).map((_, i) => (
                   <Card key={i}>
                     <CardHeader>
                       <Skeleton className="h-6 w-3/4" />
@@ -420,7 +420,7 @@ export default function ProjectsPage() {
               </Card>
             ) : (
               <>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
                   {paginatedProjects.map(project => (
                     <ProjectCard
                       key={project.id}
@@ -453,8 +453,10 @@ export default function ProjectsPage() {
           </div>
 
           {/* Recent Activity Sidebar */}
-          <div className="lg:col-span-1">
-            <RecentActivity maxItems={8} />
+          <div className="space-y-4 lg:col-span-1">
+            <div className="sticky top-6">
+              <RecentActivity maxItems={8} />
+            </div>
           </div>
         </div>
 

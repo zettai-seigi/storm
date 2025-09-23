@@ -22,6 +22,10 @@ const customJestConfig = {
     '^@/mocks/(.*)$': '<rootDir>/src/mocks/$1',
   },
   testEnvironment: 'jest-environment-jsdom',
+  // Set max workers for CI environment
+  maxWorkers: process.env.CI ? 2 : '50%',
+  // Bail on first test failure in CI
+  bail: process.env.CI ? 1 : 0,
   collectCoverageFrom: [
     'src/**/*.{js,jsx,ts,tsx}',
     '!src/**/*.d.ts',
@@ -32,6 +36,8 @@ const customJestConfig = {
     '!**/node_modules/**',
     '!**/.next/**',
   ],
+  // Disable code coverage to avoid babel-plugin-istanbul issues
+  collectCoverage: false,
   coverageThreshold: {
     global: {
       branches: 0,
@@ -50,10 +56,13 @@ const customJestConfig = {
     '**/*.(test|spec).(ts|tsx|js|jsx)',
   ],
   transform: {
-    '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],
+    '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', {
+      presets: ['next/babel'],
+      'plugins': []
+    }],
   },
   transformIgnorePatterns: [
-    '/node_modules/',
+    '/node_modules/(?!(test-exclude|babel-plugin-istanbul)/)',
     '^.+\\.module\\.(css|sass|scss)$',
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],

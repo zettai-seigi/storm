@@ -2,6 +2,9 @@ import '@testing-library/jest-dom';
 import 'jest-axe/extend-expect';
 import WS from 'jest-websocket-mock';
 
+// Increase timeout for CI environment
+jest.setTimeout(10000);
+
 // Add fetch polyfills for MSW in Node environment
 import 'whatwg-fetch';
 const nodeFetch = require('node-fetch');

@@ -7,6 +7,7 @@ import {
   Eye,
   EyeOff,
   HelpCircle,
+  RefreshCw,
 } from 'lucide-react';
 import {
   Card,
@@ -40,6 +41,7 @@ import {
   isRetrieverConfigured,
 } from '@/config/api.config';
 import { debugApiKeys } from '@/utils/debug-api-keys';
+import { useAvailableModels } from '@/hooks/useAvailableModels';
 
 export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
   config,
@@ -196,6 +198,7 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
   );
   const [showApiKeys, setShowApiKeys] = React.useState(false);
   const [hasChanges, setHasChanges] = React.useState(false);
+  const [isCustomModel, setIsCustomModel] = React.useState(false);
 
   // Re-initialize config when backend data is loaded
   React.useEffect(() => {
@@ -255,10 +258,10 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
     setHasChanges(isChanged);
   }, [config, localConfig]);
 
-  const handleConfigChange = (path: string, value: unknown) => {
-    setLocalConfig(prev => {
+  const handleConfigChange = React.useCallback(
+    (path: string, value: unknown) => {
       const keys = path.split('.');
-      const newConfig = { ...prev };
+      const newConfig = { ...localConfig };
       let current: any = newConfig;
 
       for (let i = 0; i < keys.length - 1; i++) {
@@ -287,9 +290,12 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
         }
       }
 
-      return newConfig;
-    });
-  };
+      // Only update local state, don't call onChange yet
+      // This keeps the Save button enabled
+      setLocalConfig(newConfig);
+    },
+    [localConfig]
+  );
 
   const handleSave = () => {
     onChange(localConfig);
@@ -299,15 +305,6 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
   const handleReset = () => {
     setLocalConfig(config);
   };
-
-  const llmProviders = [
-    { value: 'openai', label: 'OpenAI' },
-    { value: 'anthropic', label: 'Anthropic' },
-    { value: 'azure', label: 'Azure OpenAI' },
-    { value: 'gemini', label: 'Google Gemini' },
-    { value: 'ollama', label: 'Ollama' },
-    { value: 'groq', label: 'Groq' },
-  ];
 
   const retrieverTypes = [
     { value: 'google', label: 'Google Search' },
@@ -319,18 +316,45 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
     { value: 'vector', label: 'Vector Database' },
   ];
 
-  const popularModels = {
-    openai: ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-3.5-turbo'],
-    anthropic: [
-      'claude-3-5-sonnet-20241022',
-      'claude-3-opus-20240229',
-      'claude-3-haiku-20240307',
-    ],
-    azure: ['gpt-4', 'gpt-35-turbo'],
-    gemini: ['gemini-pro', 'gemini-pro-vision'],
-    ollama: ['llama2', 'codellama', 'mistral'],
-    groq: ['llama2-70b-4096', 'mixtral-8x7b-32768'],
-  };
+  // Dynamic model fetching for selected provider
+  const {
+    models: availableModels,
+    loading: modelsLoading,
+    refetch: refetchModels,
+  } = useAvailableModels(localConfig.llm?.provider || '');
+
+  // Use available models from API only, no fallback
+  const modelOptions = React.useMemo(() => {
+    return availableModels.map(m => ({
+      value: m.id,
+      label: m.name || m.id,
+      description: m.description,
+    }));
+  }, [availableModels]);
+
+  // Check if current model is custom (not in the list)
+  React.useEffect(() => {
+    if (localConfig.llm?.model && modelOptions.length > 0 && !modelsLoading) {
+      const isModelInList = modelOptions.some(
+        option => option.value === localConfig.llm?.model
+      );
+      if (!isModelInList && localConfig.llm?.model) {
+        setIsCustomModel(true);
+      }
+    }
+  }, [localConfig.llm?.model, modelOptions, modelsLoading]);
+
+  // LLM providers list with labels
+  const llmProviders = [
+    { value: 'openai', label: 'OpenAI' },
+    { value: 'anthropic', label: 'Anthropic' },
+    { value: 'azure', label: 'Azure OpenAI' },
+    { value: 'gemini', label: 'Google Gemini' },
+    { value: 'ollama', label: 'Ollama (Local)' },
+    { value: 'lmstudio', label: 'LM Studio (Local)' },
+    { value: 'groq', label: 'Groq' },
+    { value: 'cohere', label: 'Cohere' },
+  ];
 
   return (
     <Card className={cn('w-full max-w-4xl', className)}>
@@ -403,29 +427,86 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="llm-model">Model</Label>
-                  <Select
-                    value={localConfig.llm?.model}
-                    onValueChange={value =>
-                      handleConfigChange('llm.model', value)
-                    }
-                  >
-                    <SelectTrigger id="llm-model">
-                      <SelectValue placeholder="Select model" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {(
-                        localConfig.llm?.provider &&
-                        popularModels[localConfig.llm.provider]
-                      )?.map(model => (
-                        <SelectItem key={model} value={model}>
-                          {model}
-                        </SelectItem>
-                      )) || (
-                        <SelectItem value="custom">Custom Model</SelectItem>
-                      )}
-                    </SelectContent>
-                  </Select>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="llm-model">Model</Label>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6"
+                      onClick={() => refetchModels()}
+                      disabled={modelsLoading}
+                    >
+                      <RefreshCw
+                        className={cn(
+                          'h-3 w-3',
+                          modelsLoading && 'animate-spin'
+                        )}
+                      />
+                    </Button>
+                  </div>
+                  {/* Show input field when no models available or when custom is selected */}
+                  {(modelOptions.length === 0 && !modelsLoading) ||
+                  localConfig.llm?.model === 'custom' ? (
+                    <Input
+                      id="llm-model-custom"
+                      value={
+                        localConfig.llm?.model === 'custom'
+                          ? ''
+                          : localConfig.llm?.model || ''
+                      }
+                      onChange={e =>
+                        handleConfigChange('llm.model', e.target.value)
+                      }
+                      placeholder="Enter custom model name (e.g., gpt-4, claude-3-opus)"
+                    />
+                  ) : (
+                    <Select
+                      value={localConfig.llm?.model}
+                      onValueChange={value =>
+                        handleConfigChange('llm.model', value)
+                      }
+                    >
+                      <SelectTrigger id="llm-model" disabled={modelsLoading}>
+                        <SelectValue
+                          placeholder={
+                            modelsLoading ? 'Loading models...' : 'Select model'
+                          }
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {modelOptions.length > 0 && (
+                          <>
+                            {modelOptions.map(model => (
+                              <SelectItem key={model.value} value={model.value}>
+                                <div className="flex flex-col">
+                                  <span>{model.label}</span>
+                                  {model.description && (
+                                    <span className="text-xs text-muted-foreground">
+                                      {model.description}
+                                    </span>
+                                  )}
+                                </div>
+                              </SelectItem>
+                            ))}
+                            <SelectItem value="custom">
+                              <div className="flex flex-col">
+                                <span>Custom Model</span>
+                                <span className="text-xs text-muted-foreground">
+                                  Enter a custom model name
+                                </span>
+                              </div>
+                            </SelectItem>
+                          </>
+                        )}
+                        {modelOptions.length === 0 && modelsLoading && (
+                          <SelectItem value="loading" disabled>
+                            Loading...
+                          </SelectItem>
+                        )}
+                      </SelectContent>
+                    </Select>
+                  )}
                 </div>
               </div>
 
@@ -458,6 +539,21 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
                   />
                 </div>
               )}
+              {localConfig.llm?.provider === 'lmstudio' && (
+                <div className="space-y-2">
+                  <Label htmlFor="lmstudio-base-url">LM Studio Base URL</Label>
+                  <Input
+                    id="lmstudio-base-url"
+                    value={
+                      localConfig.llm?.baseUrl || 'http://localhost:1234/v1'
+                    }
+                    onChange={e =>
+                      handleConfigChange('llm.baseUrl', e.target.value)
+                    }
+                    placeholder="http://localhost:1234/v1"
+                  />
+                </div>
+              )}
 
               <div className="space-y-4">
                 <div className="space-y-2">
@@ -472,6 +568,7 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
                   <Input
                     id="api-key"
                     type={showApiKeys ? 'text' : 'password'}
+                    autoComplete="new-password"
                     value={
                       localConfig.llm?.apiKey ||
                       (backendApiKeys &&
@@ -605,6 +702,7 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
                   <Input
                     id="retriever-api-key"
                     type={showApiKeys ? 'text' : 'password'}
+                    autoComplete="new-password"
                     value={
                       localConfig.retriever?.apiKey ||
                       (backendApiKeys &&

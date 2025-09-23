@@ -337,10 +337,13 @@ describe('usePipeline', () => {
           attemptCount++;
 
           if (attemptCount < 3) {
-            return HttpResponse.json({success: false, error: 'Server error' });
+            return HttpResponse.json({ success: false, error: 'Server error' });
           }
 
-          return HttpResponse.json({success: true, data: { pipelineId: 'pipeline-123' } });
+          return HttpResponse.json({
+            success: true,
+            data: { pipelineId: 'pipeline-123' },
+          });
         })
       );
 
@@ -360,7 +363,7 @@ describe('usePipeline', () => {
     it('gives up after max retries', async () => {
       server.use(
         http.post('/api/pipeline/start', () => {
-          return HttpResponse.json({success: false, error: 'Server error' });
+          return HttpResponse.json({ success: false, error: 'Server error' });
         })
       );
 
@@ -382,7 +385,10 @@ describe('usePipeline', () => {
       server.use(
         http.post('/api/pipeline/start', async () => {
           await new Promise(resolve => setTimeout(resolve, 100));
-          return HttpResponse.json({ success: true, data: { pipelineId: 'pipeline-123' } });
+          return HttpResponse.json({
+            success: true,
+            data: { pipelineId: 'pipeline-123' },
+          });
         })
       );
 
@@ -404,7 +410,10 @@ describe('usePipeline', () => {
     it('allows start after previous operation completes', async () => {
       server.use(
         http.post('/api/pipeline/start', () => {
-          return HttpResponse.json({success: true, data: { pipelineId: 'pipeline-123' } });
+          return HttpResponse.json({
+            success: true,
+            data: { pipelineId: 'pipeline-123' },
+          });
         })
       );
 
@@ -428,7 +437,10 @@ describe('usePipeline', () => {
       server.use(
         http.post('/api/pipeline/start', async () => {
           await new Promise(resolve => setTimeout(resolve, 1000));
-          return HttpResponse.json({ success: true, data: { pipelineId: 'pipeline-123' } });
+          return HttpResponse.json({
+            success: true,
+            data: { pipelineId: 'pipeline-123' },
+          });
         })
       );
 
@@ -449,7 +461,7 @@ describe('usePipeline', () => {
     it('clears errors when starting new pipeline', async () => {
       server.use(
         http.post('/api/pipeline/start', ({ request }) => {
-          return HttpResponse.json({success: false, error: 'Initial error' });
+          return HttpResponse.json({ success: false, error: 'Initial error' });
         })
       );
 
@@ -465,7 +477,10 @@ describe('usePipeline', () => {
       // Mock successful response
       server.use(
         http.post('/api/pipeline/start', ({ request }) => {
-          return HttpResponse.json({success: true, data: { pipelineId: 'pipeline-123' } });
+          return HttpResponse.json({
+            success: true,
+            data: { pipelineId: 'pipeline-123' },
+          });
         })
       );
 

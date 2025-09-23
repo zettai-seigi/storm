@@ -334,8 +334,12 @@ describe('ProjectCard Performance Tests', () => {
 
       // Multiple hover states
       for (let i = 0; i < 20; i++) {
-        projectCard.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
-        projectCard.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }));
+        projectCard.dispatchEvent(
+          new MouseEvent('mouseenter', { bubbles: true })
+        );
+        projectCard.dispatchEvent(
+          new MouseEvent('mouseleave', { bubbles: true })
+        );
       }
 
       const endTime = performance.now();

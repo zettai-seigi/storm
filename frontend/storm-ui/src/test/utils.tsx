@@ -6,7 +6,7 @@ import { ThemeProvider } from '@/store/contexts/ThemeContext';
 // import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // TODO: Install react-query
 import { StoreProvider } from '@/store/contexts/StoreProvider';
 import { WebSocketContext } from '@/store/contexts/WebSocketContext';
-import { ConfigContext } from '@/store/contexts/ConfigContext';
+import { ConfigProvider } from '@/store/contexts/ConfigContext';
 // import WS from 'jest-websocket-mock'; // TODO: Install jest-websocket-mock
 
 // Extend jest matchers
@@ -48,16 +48,9 @@ const AllTheProviders: React.FC<{
     readyState: WebSocket.OPEN,
   };
 
-  const mockConfig = {
-    apiBaseUrl: 'http://localhost:3000/api',
-    wsBaseUrl: webSocketUrl,
-    defaultLLM: 'gpt-4o',
-    defaultRetriever: 'bing',
-  };
-
   return (
     <ThemeProvider defaultTheme={theme as 'light' | 'dark' | 'system'}>
-      <ConfigContext.Provider value={mockConfig}>
+      <ConfigProvider>
         {/* <QueryClientProvider client={queryClient}> */}
         <WebSocketContext.Provider value={mockWebSocket}>
           <StoreProvider initialState={initialStoreState}>
@@ -65,7 +58,7 @@ const AllTheProviders: React.FC<{
           </StoreProvider>
         </WebSocketContext.Provider>
         {/* </QueryClientProvider> */}
-      </ConfigContext.Provider>
+      </ConfigProvider>
     </ThemeProvider>
   );
 };

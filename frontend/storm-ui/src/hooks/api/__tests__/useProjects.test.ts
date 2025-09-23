@@ -70,7 +70,7 @@ describe('useProjects', () => {
   describe('fetching projects', () => {
     it('fetches projects successfully', async () => {
       server.use(
-        http.get('/api/projects', () => {
+        http.get('*/api/projects', () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -98,7 +98,7 @@ describe('useProjects', () => {
 
     it('handles fetch errors', async () => {
       server.use(
-        http.get('/api/projects', () => {
+        http.get('*/api/projects', () => {
           return HttpResponse.json({
             success: false,
             error: 'Server error',
@@ -118,7 +118,7 @@ describe('useProjects', () => {
 
     it('supports pagination', async () => {
       server.use(
-        http.get('/api/projects', ({ request }) => {
+        http.get('*/api/projects', ({ request }) => {
           const page = request.url.searchParams.get('page');
           const limit = request.url.searchParams.get('limit');
 
@@ -128,10 +128,10 @@ describe('useProjects', () => {
           return HttpResponse.json({
             success: true,
             data: {
-                projects: [mockProjects[1]],
-                total: 2,
-                page: 2,
-                limit: 5,
+              projects: [mockProjects[1]],
+              total: 2,
+              page: 2,
+              limit: 5,
             },
           });
         })
@@ -147,24 +147,25 @@ describe('useProjects', () => {
 
     it('supports filtering by status', async () => {
       server.use(
-        http.get('/api/projects', ({ request }) => {
+        http.get('*/api/projects', ({ request }) => {
           const status = request.url.searchParams.get('status');
           expect(status).toBe('completed');
 
           return HttpResponse.json({
             success: true,
             data: {
-                projects: [mockProjects[0]],
-                total: 1,
-                page: 1,
-                limit: 10,
+              projects: [mockProjects[0]],
+              total: 1,
+              page: 1,
+              limit: 10,
             },
           });
         })
       );
 
       const { result } = renderHook(() =>
-        useProjects({ filters: { status: ['completed'] } }));
+        useProjects({ filters: { status: ['completed'] } })
+      );
       await waitFor(() => {
         expect(result.current.projects).toEqual([mockProjects[0]]);
       });
@@ -172,24 +173,25 @@ describe('useProjects', () => {
 
     it('supports search query', async () => {
       server.use(
-        http.get('/api/projects', ({ request }) => {
+        http.get('*/api/projects', ({ request }) => {
           const search = request.url.searchParams.get('search');
           expect(search).toBe('AI');
 
           return HttpResponse.json({
             success: true,
             data: {
-                projects: [mockProjects[0]],
-                total: 1,
-                page: 1,
-                limit: 10,
+              projects: [mockProjects[0]],
+              total: 1,
+              page: 1,
+              limit: 10,
             },
           });
         })
       );
 
       const { result } = renderHook(() =>
-        useProjects({ filters: { searchQuery: 'AI' } }));
+        useProjects({ filters: { searchQuery: 'AI' } })
+      );
       await waitFor(() => {
         expect(result.current.projects).toEqual([mockProjects[0]]);
       });
@@ -215,7 +217,7 @@ describe('useProjects', () => {
       };
 
       server.use(
-        http.post('/api/projects', () => {
+        http.post('*/api/projects', () => {
           return HttpResponse.json({
             success: true,
             data: createdProject,
@@ -236,7 +238,7 @@ describe('useProjects', () => {
 
     it('handles create errors', async () => {
       server.use(
-        http.post('/api/projects', () => {
+        http.post('*/api/projects', () => {
           return HttpResponse.json({
             success: false,
             error: 'Invalid project data',
@@ -277,7 +279,7 @@ describe('useProjects', () => {
       };
 
       server.use(
-        http.put('/api/projects/:id', ({ request }) => {
+        http.put('*/api/projects/:id', ({ request }) => {
           expect(request.params.id).toBe('project-1');
 
           return HttpResponse.json({
@@ -302,7 +304,7 @@ describe('useProjects', () => {
 
     it('handles update errors', async () => {
       server.use(
-        http.put('/api/projects/:id', () => {
+        http.put('*/api/projects/:id', () => {
           return HttpResponse.json({
             success: false,
             error: 'Project not found',
@@ -325,7 +327,7 @@ describe('useProjects', () => {
   describe('deleting projects', () => {
     it('deletes project successfully', async () => {
       server.use(
-        http.delete('/api/projects/:id', ({ request }) => {
+        http.delete('*/api/projects/:id', ({ request }) => {
           expect(request.params.id).toBe('project-1');
 
           return HttpResponse.json({
@@ -347,7 +349,7 @@ describe('useProjects', () => {
 
     it('handles delete errors', async () => {
       server.use(
-        http.delete('/api/projects/:id', () => {
+        http.delete('*/api/projects/:id', () => {
           return HttpResponse.json({
             success: false,
             error: 'Cannot delete project in progress',
@@ -390,7 +392,7 @@ describe('useProjects', () => {
       };
 
       server.use(
-        http.post('/api/projects/:id/duplicate', ({ request }) => {
+        http.post('*/api/projects/:id/duplicate', ({ request }) => {
           expect(request.params.id).toBe('project-1');
 
           return HttpResponse.json({
@@ -411,7 +413,7 @@ describe('useProjects', () => {
 
     it('handles duplicate errors', async () => {
       server.use(
-        http.post('/api/projects/:id/duplicate', () => {
+        http.post('*/api/projects/:id/duplicate', () => {
           return HttpResponse.json({
             success: false,
             error: 'Original project not found',
@@ -432,7 +434,7 @@ describe('useProjects', () => {
   describe('archiving projects', () => {
     it('archives project successfully', async () => {
       server.use(
-        http.post('/api/projects/:id/archive', ({ request }) => {
+        http.post('*/api/projects/:id/archive', ({ request }) => {
           expect(request.params.id).toBe('project-1');
 
           return HttpResponse.json({
@@ -452,7 +454,7 @@ describe('useProjects', () => {
 
     it('unarchives project successfully', async () => {
       server.use(
-        http.post('/api/projects/:id/unarchive', ({ request }) => {
+        http.post('*/api/projects/:id/unarchive', ({ request }) => {
           expect(request.params.id).toBe('project-1');
 
           return HttpResponse.json({
@@ -474,7 +476,7 @@ describe('useProjects', () => {
   describe('refresh functionality', () => {
     it('refreshes projects list', async () => {
       server.use(
-        http.get('/api/projects', () => {
+        http.get('*/api/projects', () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -505,7 +507,7 @@ describe('useProjects', () => {
     it('handles refresh errors gracefully', async () => {
       // Initial successful load
       server.use(
-        http.get('/api/projects', () => {
+        http.get('*/api/projects', () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -526,7 +528,7 @@ describe('useProjects', () => {
 
       // Mock refresh failure
       server.use(
-        http.get('/api/projects', () => {
+        http.get('*/api/projects', () => {
           return HttpResponse.json({
             success: false,
             error: 'Refresh failed',
@@ -548,7 +550,7 @@ describe('useProjects', () => {
     it('optimistically updates project title', async () => {
       // Set up initial projects
       server.use(
-        http.get('/api/projects', () => {
+        http.get('*/api/projects', () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -569,7 +571,7 @@ describe('useProjects', () => {
 
       // Mock slow update
       server.use(
-        http.put('/api/projects/:id', async () => {
+        http.put('*/api/projects/:id', async () => {
           await new Promise(resolve => setTimeout(resolve, 1000));
           return HttpResponse.json({
             success: true,
@@ -580,7 +582,7 @@ describe('useProjects', () => {
           });
         })
       );
-      
+
       act(() => {
         result.current.updateProject(
           'project-1',
@@ -600,7 +602,7 @@ describe('useProjects', () => {
 
     it('reverts optimistic updates on failure', async () => {
       server.use(
-        http.get('/api/projects', () => {
+        http.get('*/api/projects', () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -623,7 +625,7 @@ describe('useProjects', () => {
 
       // Mock failed update
       server.use(
-        http.put('/api/projects/:id', () => {
+        http.put('*/api/projects/:id', () => {
           return HttpResponse.json({
             success: false,
             error: 'Update failed',
@@ -652,16 +654,16 @@ describe('useProjects', () => {
       let requestCount = 0;
 
       server.use(
-        http.get('/api/projects', ({ request }) => {
+        http.get('*/api/projects', ({ request }) => {
           requestCount++;
           return HttpResponse.json({
             success: true,
             data: {
-                projects: mockProjects,
-                total: mockProjects.length,
-                page: 1,
-                limit: 10,
-              },
+              projects: mockProjects,
+              total: mockProjects.length,
+              page: 1,
+              limit: 10,
+            },
           });
         })
       );
@@ -683,19 +685,19 @@ describe('useProjects', () => {
       let getRequestCount = 0;
 
       server.use(
-        http.get('/api/projects', () => {
+        http.get('*/api/projects', () => {
           getRequestCount++;
           return HttpResponse.json({
             success: true,
             data: {
-                projects: mockProjects,
-                total: mockProjects.length,
-                page: 1,
-                limit: 10,
-              },
+              projects: mockProjects,
+              total: mockProjects.length,
+              page: 1,
+              limit: 10,
+            },
           });
         }),
-        http.post('/api/projects', () => {
+        http.post('*/api/projects', () => {
           return HttpResponse.json({
             success: true,
             data: { id: 'new-project' },

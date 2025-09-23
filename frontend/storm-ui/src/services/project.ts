@@ -13,7 +13,7 @@ import {
 import { createProjectWebSocket } from '../lib/websocket';
 
 export class ProjectService extends BaseApiService {
-  private readonly basePath = '/api/projects';
+  private readonly basePath = '/projects';
 
   /**
    * Get all projects with optional filtering and pagination

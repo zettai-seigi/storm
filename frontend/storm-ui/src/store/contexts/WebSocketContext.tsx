@@ -50,7 +50,7 @@ export interface WebSocketConfig {
 }
 
 // WebSocket context type
-interface WebSocketContextType {
+export interface WebSocketContextType {
   // Connection state
   state: WebSocketState;
   isConnected: boolean;
@@ -107,7 +107,7 @@ export interface MessageStats {
 }
 
 // WebSocket context
-const WebSocketContext = createContext<WebSocketContextType | undefined>(
+export const WebSocketContext = createContext<WebSocketContextType | undefined>(
   undefined
 );
 
