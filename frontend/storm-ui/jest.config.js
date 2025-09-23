@@ -22,6 +22,10 @@ const customJestConfig = {
     '^@/mocks/(.*)$': '<rootDir>/src/mocks/$1',
   },
   testEnvironment: 'jest-environment-jsdom',
+  // Set max workers for CI environment
+  maxWorkers: process.env.CI ? 2 : '50%',
+  // Bail on first test failure in CI
+  bail: process.env.CI ? 1 : 0,
   collectCoverageFrom: [
     'src/**/*.{js,jsx,ts,tsx}',
     '!src/**/*.d.ts',
