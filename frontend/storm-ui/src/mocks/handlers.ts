@@ -93,8 +93,20 @@ const generateMockResearchData = (): ResearchData => ({
 
 // API Handlers
 export const handlers = [
+  // CORS OPTIONS handlers
+  http.options('*/api/*', () => {
+    return new HttpResponse(null, {
+      status: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      },
+    });
+  }),
+
   // Projects API
-  http.get('/api/projects', ({ request }) => {
+  http.get('*/api/projects', ({ request }) => {
     const url = new URL(request.url);
     const page = parseInt(url.searchParams.get('page') || '1');
     const limit = parseInt(url.searchParams.get('limit') || '10');
@@ -138,7 +150,7 @@ export const handlers = [
     });
   }),
 
-  http.get('/api/projects/:projectId', ({ params }) => {
+  http.get('*/api/projects/:projectId', ({ params }) => {
     const { projectId } = params;
     const project = generateMockProject(projectId as string, {
       progress: generateMockPipelineProgress(),
@@ -152,7 +164,7 @@ export const handlers = [
     });
   }),
 
-  http.post('/api/projects', async ({ request }) => {
+  http.post('*/api/projects', async ({ request }) => {
     const body = (await request.json()) as any;
     const newProject = generateMockProject(Date.now().toString(), {
       title: body.title,
@@ -168,7 +180,7 @@ export const handlers = [
     });
   }),
 
-  http.put('/api/projects/:projectId', async ({ params, request }) => {
+  http.put('*/api/projects/:projectId', async ({ params, request }) => {
     const { projectId } = params;
     const body = (await request.json()) as any;
     const updatedProject = generateMockProject(projectId as string, body);
@@ -180,7 +192,7 @@ export const handlers = [
     });
   }),
 
-  http.delete('/api/projects/:projectId', ({ params }) => {
+  http.delete('*/api/projects/:projectId', ({ params }) => {
     return HttpResponse.json({
       success: true,
       timestamp: new Date(),
@@ -188,7 +200,7 @@ export const handlers = [
   }),
 
   http.post(
-    '/api/projects/:projectId/duplicate',
+    '*/api/projects/:projectId/duplicate',
     async ({ params, request }) => {
       const { projectId } = params;
       const body = (await request.json()) as any;
