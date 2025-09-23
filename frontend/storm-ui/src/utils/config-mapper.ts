@@ -134,7 +134,8 @@ export function mapConfigFromBackend(backendConfig: any): StormConfig {
           maxPerspectives: backendConfig.pipeline.max_perspective,
           searchQueriesPerTurn:
             backendConfig.pipeline.search_queries_per_turn ??
-            backendConfig.pipeline.max_search_queries_per_turn ?? 3,
+            backendConfig.pipeline.max_search_queries_per_turn ??
+            3,
           disablePerspective: backendConfig.pipeline.disable_perspective,
           includeFigures: backendConfig.pipeline.include_figures,
           includeReferences: backendConfig.pipeline.include_references,

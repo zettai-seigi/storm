@@ -446,11 +446,18 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
                     </Button>
                   </div>
                   {/* Show input field when no models available or when custom is selected */}
-                  {(modelOptions.length === 0 && !modelsLoading) || localConfig.llm?.model === 'custom' ? (
+                  {(modelOptions.length === 0 && !modelsLoading) ||
+                  localConfig.llm?.model === 'custom' ? (
                     <Input
                       id="llm-model-custom"
-                      value={localConfig.llm?.model === 'custom' ? '' : (localConfig.llm?.model || '')}
-                      onChange={e => handleConfigChange('llm.model', e.target.value)}
+                      value={
+                        localConfig.llm?.model === 'custom'
+                          ? ''
+                          : localConfig.llm?.model || ''
+                      }
+                      onChange={e =>
+                        handleConfigChange('llm.model', e.target.value)
+                      }
                       placeholder="Enter custom model name (e.g., gpt-4, claude-3-opus)"
                     />
                   ) : (
