@@ -32,6 +32,8 @@ const customJestConfig = {
     '!**/node_modules/**',
     '!**/.next/**',
   ],
+  // Disable code coverage to avoid babel-plugin-istanbul issues
+  collectCoverage: false,
   coverageThreshold: {
     global: {
       branches: 0,
@@ -53,7 +55,7 @@ const customJestConfig = {
     '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],
   },
   transformIgnorePatterns: [
-    '/node_modules/',
+    '/node_modules/(?!(test-exclude|babel-plugin-istanbul)/)',
     '^.+\\.module\\.(css|sass|scss)$',
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
