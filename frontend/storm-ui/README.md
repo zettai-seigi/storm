@@ -11,6 +11,16 @@ A modern, responsive web interface for the STORM (Synthesis of Topic Outlines th
 
 STORM UI is a comprehensive web application that provides an intuitive interface for AI-powered article generation and collaborative knowledge curation. It serves as the frontend for the STORM system, enabling users to generate Wikipedia-quality articles through multi-perspective research and AI-driven content synthesis.
 
+### Current Status
+
+✅ **Production Ready**: Both frontend and backend are fully implemented and functional.
+- **Frontend**: Next.js 14 application with complete UI components
+- **Backend**: FastAPI server with file-based storage system
+- **STORM Integration**: Version 1.1.0 integrated and working
+- **Storage**: File-based project storage (no database required)
+- **API**: RESTful endpoints at `http://localhost:8000/api`
+- **UI**: Responsive web interface at `http://localhost:3000`
+
 ### Key Features
 
 - 🚀 **Automated Article Generation** - Generate comprehensive articles from any topic
@@ -109,16 +119,20 @@ The STORM pipeline consists of four main stages:
 ### Quick Start
 
 ```bash
-# Clone and install
+# Clone the repository
 git clone https://github.com/zettai-seigi/storm.git
-cd storm/frontend/storm-ui
+cd storm
+
+# Start the backend (Terminal 1)
+cd backend
+pip install -r requirements.txt
+python main.py  # Runs on http://localhost:8000
+
+# Start the frontend (Terminal 2)
+cd frontend/storm-ui
 npm install
-
-# Configure environment
 cp .env.example .env.local
-
-# Start development server
-npm run dev
+npm run dev  # Runs on http://localhost:3000
 ```
 
 For detailed installation instructions, see [INSTALL.md](./INSTALL.md).
@@ -221,30 +235,39 @@ await client.runPipeline(project.id);
 ### Project Structure
 
 ```
-storm-ui/
-├── app/                    # Next.js App Router pages
-│   ├── layout.tsx         # Root layout with navigation
-│   ├── page.tsx           # Home page (redirects to dashboard)
-│   ├── projects/          # Project management pages
-│   ├── analytics/         # Analytics dashboard
-│   ├── settings/          # Configuration pages
-│   └── api/              # API route handlers
-├── src/
-│   ├── components/        # React components
-│   │   ├── storm/        # STORM-specific components
-│   │   ├── ui/           # Base UI components (shadcn)
-│   │   ├── layout/       # Layout components
-│   │   └── visualization/ # Charts and graphs
-│   ├── services/         # API client services
-│   ├── store/           # Zustand state stores
-│   ├── hooks/           # Custom React hooks
-│   ├── lib/             # Utility functions
-│   ├── types/           # TypeScript definitions
-│   └── styles/          # Global styles
-├── public/              # Static assets
-├── tests/               # Test files
-└── config/              # Configuration files
-```
+storm/
+├── backend/                 # FastAPI backend (IMPLEMENTED)
+│   ├── main.py             # FastAPI application entry
+│   ├── routers/            # API endpoints
+│   │   ├── projects.py     # Project CRUD operations
+│   │   ├── pipeline.py     # Pipeline execution
+│   │   ├── settings.py     # Configuration management
+│   │   ├── models.py       # LLM model management
+│   │   └── docs.py         # Documentation endpoints
+│   ├── services/           # Business logic
+│   │   ├── file_service.py # File-based storage
+│   │   ├── storm_runner.py # STORM integration
+│   │   └── config_service.py # Configuration handling
+│   └── storm-projects/     # File storage directory
+│       ├── projects.json   # Project index
+│       └── projects/       # Individual project files
+├── frontend/
+│   └── storm-ui/           # Next.js frontend (IMPLEMENTED)
+│       ├── app/            # App Router pages
+│       │   ├── projects/   # Project management UI
+│       │   ├── settings/   # Settings UI
+│       │   ├── analytics/  # Analytics dashboard
+│       │   ├── activity/   # Activity feed
+│       │   ├── knowledge-base/ # Knowledge browser
+│       │   └── help/       # Help documentation
+│       ├── src/
+│       │   ├── components/ # React components
+│       │   ├── services/   # API client services
+│       │   ├── store/      # Zustand state management
+│       │   ├── hooks/      # Custom React hooks
+│       │   └── types/      # TypeScript definitions
+│       └── public/         # Static assets
+└── knowledge_storm/        # Core STORM library
 
 ### Component Architecture
 
@@ -405,33 +428,53 @@ Follow conventional commits:
 
 ### Backend Requirements
 
-The STORM UI requires the backend API to be running. The backend provides:
+The STORM UI backend is fully implemented and provides:
 
-- Project CRUD operations
-- Pipeline execution
-- WebSocket connections for real-time updates
-- File storage and retrieval
-- API key validation
+- ✅ Project CRUD operations with file-based storage
+- ✅ Pipeline execution with STORM integration
+- ✅ Real-time status updates
+- ✅ Configuration management
+- ✅ Model provider integration (OpenAI, Ollama, LMStudio)
+- ✅ Export functionality
 
-### API Endpoints
+### Available API Endpoints
 
 ```typescript
-// Core API endpoints
-GET    /api/projects              // List projects
-POST   /api/projects              // Create project
-GET    /api/projects/:id          // Get project
-PUT    /api/projects/:id          // Update project
-DELETE /api/projects/:id          // Delete project
+// Project Management
+GET    /api/projects/                    // List all projects
+POST   /api/projects/                    // Create new project
+GET    /api/projects/{id}                // Get project details
+PUT    /api/projects/{id}                // Update project
+DELETE /api/projects/{id}                // Delete project
+POST   /api/projects/{id}/duplicate      // Duplicate project
+GET    /api/projects/{id}/export         // Export article
+GET    /api/projects/{id}/conversations  // Get research conversations
+GET    /api/projects/stats/summary      // Get project statistics
 
-POST   /api/pipeline/start        // Start pipeline
-GET    /api/pipeline/status/:id   // Get pipeline status
-POST   /api/pipeline/stop         // Stop pipeline
+// Pipeline Execution
+POST   /api/pipeline/{id}/run            // Start pipeline
+GET    /api/pipeline/{id}/status         // Get pipeline status
+POST   /api/pipeline/{id}/cancel         // Cancel running pipeline
+GET    /api/pipeline/{id}/logs           // Get pipeline logs
+GET    /api/pipeline/running             // Get all running pipelines
 
-GET    /api/config/templates      // Get config templates
-POST   /api/config/validate       // Validate configuration
+// Model Management
+GET    /api/models/providers             // List available providers
+GET    /api/models/providers/{provider}/models  // Get models for provider
+GET    /api/models/ollama/models         // Get Ollama models
+GET    /api/models/lmstudio/models       // Get LMStudio models
+POST   /api/models/test-connection       // Test model connection
 
-GET    /api/export/:projectId     // Export article
-POST   /api/research/search       // Manual search
+// Configuration
+GET    /api/pipeline/config/models       // Get available LLM models
+GET    /api/pipeline/config/retrievers   // Get available retrievers
+GET    /api/settings/                    // Get user settings
+POST   /api/settings/                    // Save settings
+
+// Documentation
+GET    /api/docs/                        // API documentation
+GET    /api/docs/config-schema           // Configuration schema
+GET    /api/docs/pipeline-stages         // Pipeline stage definitions
 ```
 
 ### WebSocket Events
@@ -584,14 +627,16 @@ describe('ProjectCard', () => {
 ### Production Build
 
 ```bash
-# Build for production
+# Backend production setup
+cd backend
+pip install -r requirements.txt
+uvicorn main:app --host 0.0.0.0 --port 8000
+
+# Frontend production build
+cd frontend/storm-ui
+npm install
 npm run build
-
-# Test production build locally
-npm start
-
-# Analyze bundle size
-npm run analyze
+npm start  # Runs on port 3000
 ```
 
 ### Docker Deployment
@@ -715,19 +760,31 @@ This project is licensed under the MIT License - see the [LICENSE](../../LICENSE
 - **Issues**: [GitHub Issues](https://github.com/zettai-seigi/storm/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/zettai-seigi/storm/discussions)
 
-## Roadmap
+## Implementation Status
 
-### Version 0.2.0 (Q1 2025)
-- [ ] Real-time collaboration features
-- [ ] Advanced analytics dashboard
-- [ ] Plugin system for custom components
-- [ ] Mobile responsive improvements
+### ✅ Completed Features
+- **Backend API**: Full FastAPI implementation with file-based storage
+- **Frontend Application**: Complete Next.js 14 app with all pages
+- **Project Management**: CRUD operations for projects
+- **Pipeline Integration**: Working STORM pipeline execution
+- **Configuration System**: API key and model configuration
+- **UI Components**: Complete component library (100+ components)
+- **State Management**: Zustand stores for all features
+- **Real-time Updates**: WebSocket support for pipeline progress
+- **File Storage**: Working file-based project storage
+- **Authentication**: API key management
 
-### Version 0.3.0 (Q2 2025)
-- [ ] Multi-language support
-- [ ] Advanced export options
-- [ ] AI model fine-tuning interface
-- [ ] Enterprise features
+### 🚧 In Progress
+- **Co-STORM**: Collaborative features being refined
+- **Export System**: Additional export formats
+- **Analytics**: Enhanced metrics and reporting
+
+### 📋 Planned Features
+- **Batch Processing**: Process multiple articles
+- **Version Control**: Article versioning system
+- **Team Collaboration**: Multi-user support
+- **Advanced Search**: Full-text search across projects
+- **Plugin System**: Extensibility framework
 
 ### Future Considerations
 - GraphQL API support
