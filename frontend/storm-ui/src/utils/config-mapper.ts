@@ -13,11 +13,11 @@ export function mapConfigToBackend(config: StormConfig): any {
     llm: {
       provider: config.llm?.provider || 'openai',
       model: config.llm?.model || 'gpt-4o',
-      temperature: config.llm?.temperature || 0.7,
-      max_tokens: config.llm?.maxTokens || 4000,
-      top_p: config.llm?.topP || 1.0,
-      frequency_penalty: config.llm?.frequencyPenalty || 0,
-      presence_penalty: config.llm?.presencePenalty || 0,
+      temperature: config.llm?.temperature ?? 0.7,
+      max_tokens: config.llm?.maxTokens ?? 4000,
+      top_p: config.llm?.topP ?? 1.0,
+      frequency_penalty: config.llm?.frequencyPenalty ?? 0,
+      presence_penalty: config.llm?.presencePenalty ?? 0,
       // Don't send api_key - it's not in backend model and causes validation error
       // api_key: config.llm?.apiKey,
       api_base: config.llm?.baseUrl,
@@ -30,10 +30,10 @@ export function mapConfigToBackend(config: StormConfig): any {
     },
     retriever: {
       retriever_type: config.retriever?.type || 'duckduckgo',
-      max_search_results: config.retriever?.maxResults || 10,
-      search_top_k: config.retriever?.searchTopK || 3,
-      min_relevance_score: config.retriever?.minRelevanceScore || 0.0,
-      enable_reranking: config.retriever?.enableReranking || false,
+      max_search_results: config.retriever?.maxResults ?? 10,
+      search_top_k: config.retriever?.searchTopK ?? 3,
+      min_relevance_score: config.retriever?.minRelevanceScore ?? 0.0,
+      enable_reranking: config.retriever?.enableReranking ?? false,
       reranking_model: config.retriever?.rerankingModel,
       // Don't send api_key - it's not in backend model and causes validation error
       // api_key: config.retriever?.apiKey,
@@ -43,12 +43,12 @@ export function mapConfigToBackend(config: StormConfig): any {
       do_generate_outline: config.pipeline?.doGenerateOutline ?? true, // Default true if undefined
       do_generate_article: config.pipeline?.doGenerateArticle ?? true, // Default true if undefined
       do_polish_article: config.pipeline?.doPolishArticle ?? true, // Default true if undefined
-      max_conv_turn: config.pipeline?.maxConvTurns || 3,
-      max_perspective: config.pipeline?.maxPerspectives || 4,
-      max_search_queries_per_turn: config.pipeline?.searchQueriesPerTurn || 3,
-      disable_perspective: config.pipeline?.disablePerspective || false,
-      include_figures: config.pipeline?.includeFigures || false,
-      include_references: config.pipeline?.includeReferences || true,
+      max_conv_turn: config.pipeline?.maxConvTurns ?? 3,
+      max_perspective: config.pipeline?.maxPerspectives ?? 4,
+      max_search_queries_per_turn: config.pipeline?.searchQueriesPerTurn ?? 3,
+      disable_perspective: config.pipeline?.disablePerspective ?? false,
+      include_figures: config.pipeline?.includeFigures ?? false,
+      include_references: config.pipeline?.includeReferences ?? true,
     },
   };
 }
@@ -72,21 +72,21 @@ export function mapConfigFromBackend(backendConfig: any): StormConfig {
         model: backendConfig.llm_model || 'gpt-4o',
         provider: backendConfig.llm_provider || 'openai',
         temperature: backendConfig.temperature ?? 0.7,
-        maxTokens: backendConfig.max_tokens || 4000,
+        maxTokens: backendConfig.max_tokens ?? 4000,
       },
       retriever: {
         type: backendConfig.retriever_type || 'tavily',
-        maxResults: backendConfig.max_search_results || 10,
-        searchTopK: backendConfig.search_top_k || 3,
+        maxResults: backendConfig.max_search_results ?? 10,
+        searchTopK: backendConfig.search_top_k ?? 3,
       },
       pipeline: {
         doResearch: backendConfig.do_research ?? true,
         doGenerateOutline: backendConfig.do_generate_outline ?? true,
         doGenerateArticle: backendConfig.do_generate_article ?? true,
         doPolishArticle: backendConfig.do_polish_article ?? true,
-        maxConvTurns: backendConfig.max_conv_turn || 3,
-        maxPerspectives: backendConfig.max_perspective || 4,
-        searchQueriesPerTurn: backendConfig.max_search_queries_per_turn || 3,
+        maxConvTurns: backendConfig.max_conv_turn ?? 3,
+        maxPerspectives: backendConfig.max_perspective ?? 4,
+        searchQueriesPerTurn: backendConfig.max_search_queries_per_turn ?? 3,
       },
     };
   }
@@ -133,8 +133,8 @@ export function mapConfigFromBackend(backendConfig: any): StormConfig {
           maxConvTurns: backendConfig.pipeline.max_conv_turn,
           maxPerspectives: backendConfig.pipeline.max_perspective,
           searchQueriesPerTurn:
-            backendConfig.pipeline.search_queries_per_turn ||
-            backendConfig.pipeline.max_search_queries_per_turn,
+            backendConfig.pipeline.search_queries_per_turn ??
+            backendConfig.pipeline.max_search_queries_per_turn ?? 3,
           disablePerspective: backendConfig.pipeline.disable_perspective,
           includeFigures: backendConfig.pipeline.include_figures,
           includeReferences: backendConfig.pipeline.include_references,
