@@ -217,7 +217,7 @@ describe('useProjects', () => {
       };
 
       server.use(
-        http.post('*/api/projects',() => {
+        http.post('*/api/projects', () => {
           return HttpResponse.json({
             success: true,
             data: createdProject,
@@ -238,7 +238,7 @@ describe('useProjects', () => {
 
     it('handles create errors', async () => {
       server.use(
-        http.post('*/api/projects',() => {
+        http.post('*/api/projects', () => {
           return HttpResponse.json({
             success: false,
             error: 'Invalid project data',
@@ -279,7 +279,7 @@ describe('useProjects', () => {
       };
 
       server.use(
-        http.put('*/api/projects/:id',({ request }) => {
+        http.put('*/api/projects/:id', ({ request }) => {
           expect(request.params.id).toBe('project-1');
 
           return HttpResponse.json({
@@ -304,7 +304,7 @@ describe('useProjects', () => {
 
     it('handles update errors', async () => {
       server.use(
-        http.put('*/api/projects/:id',() => {
+        http.put('*/api/projects/:id', () => {
           return HttpResponse.json({
             success: false,
             error: 'Project not found',
@@ -327,7 +327,7 @@ describe('useProjects', () => {
   describe('deleting projects', () => {
     it('deletes project successfully', async () => {
       server.use(
-        http.delete('*/api/projects/:id',({ request }) => {
+        http.delete('*/api/projects/:id', ({ request }) => {
           expect(request.params.id).toBe('project-1');
 
           return HttpResponse.json({
@@ -349,7 +349,7 @@ describe('useProjects', () => {
 
     it('handles delete errors', async () => {
       server.use(
-        http.delete('*/api/projects/:id',() => {
+        http.delete('*/api/projects/:id', () => {
           return HttpResponse.json({
             success: false,
             error: 'Cannot delete project in progress',
@@ -392,7 +392,7 @@ describe('useProjects', () => {
       };
 
       server.use(
-        http.post('*/api/projects/:id/duplicate',({ request }) => {
+        http.post('*/api/projects/:id/duplicate', ({ request }) => {
           expect(request.params.id).toBe('project-1');
 
           return HttpResponse.json({
@@ -413,7 +413,7 @@ describe('useProjects', () => {
 
     it('handles duplicate errors', async () => {
       server.use(
-        http.post('*/api/projects/:id/duplicate',() => {
+        http.post('*/api/projects/:id/duplicate', () => {
           return HttpResponse.json({
             success: false,
             error: 'Original project not found',
@@ -434,7 +434,7 @@ describe('useProjects', () => {
   describe('archiving projects', () => {
     it('archives project successfully', async () => {
       server.use(
-        http.post('*/api/projects/:id/archive',({ request }) => {
+        http.post('*/api/projects/:id/archive', ({ request }) => {
           expect(request.params.id).toBe('project-1');
 
           return HttpResponse.json({
@@ -454,7 +454,7 @@ describe('useProjects', () => {
 
     it('unarchives project successfully', async () => {
       server.use(
-        http.post('*/api/projects/:id/unarchive',({ request }) => {
+        http.post('*/api/projects/:id/unarchive', ({ request }) => {
           expect(request.params.id).toBe('project-1');
 
           return HttpResponse.json({
@@ -571,7 +571,7 @@ describe('useProjects', () => {
 
       // Mock slow update
       server.use(
-        http.put('*/api/projects/:id',async () => {
+        http.put('*/api/projects/:id', async () => {
           await new Promise(resolve => setTimeout(resolve, 1000));
           return HttpResponse.json({
             success: true,
@@ -625,7 +625,7 @@ describe('useProjects', () => {
 
       // Mock failed update
       server.use(
-        http.put('*/api/projects/:id',() => {
+        http.put('*/api/projects/:id', () => {
           return HttpResponse.json({
             success: false,
             error: 'Update failed',
@@ -697,7 +697,7 @@ describe('useProjects', () => {
             },
           });
         }),
-        http.post('*/api/projects',() => {
+        http.post('*/api/projects', () => {
           return HttpResponse.json({
             success: true,
             data: { id: 'new-project' },
