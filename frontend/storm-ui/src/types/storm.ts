@@ -22,6 +22,7 @@ export interface StormProject {
     [key: string]: unknown;
   };
   error?: string; // Error message if pipeline failed
+  tags?: string[]; // Optional tags for categorization
 }
 
 export type ProjectStatus =
