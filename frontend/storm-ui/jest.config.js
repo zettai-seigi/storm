@@ -56,7 +56,10 @@ const customJestConfig = {
     '**/*.(test|spec).(ts|tsx|js|jsx)',
   ],
   transform: {
-    '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],
+    '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', {
+      presets: ['next/babel'],
+      'plugins': []
+    }],
   },
   transformIgnorePatterns: [
     '/node_modules/(?!(test-exclude|babel-plugin-istanbul)/)',
