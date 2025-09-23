@@ -198,6 +198,7 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
   );
   const [showApiKeys, setShowApiKeys] = React.useState(false);
   const [hasChanges, setHasChanges] = React.useState(false);
+  const [isCustomModel, setIsCustomModel] = React.useState(false);
 
   // Re-initialize config when backend data is loaded
   React.useEffect(() => {
@@ -331,6 +332,18 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
     }));
   }, [availableModels]);
 
+  // Check if current model is custom (not in the list)
+  React.useEffect(() => {
+    if (localConfig.llm?.model && modelOptions.length > 0 && !modelsLoading) {
+      const isModelInList = modelOptions.some(
+        option => option.value === localConfig.llm?.model
+      );
+      if (!isModelInList && localConfig.llm?.model) {
+        setIsCustomModel(true);
+      }
+    }
+  }, [localConfig.llm?.model, modelOptions, modelsLoading]);
+
   // LLM providers list with labels
   const llmProviders = [
     { value: 'openai', label: 'OpenAI' },
@@ -432,40 +445,61 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
                       />
                     </Button>
                   </div>
-                  <Select
-                    value={localConfig.llm?.model}
-                    onValueChange={value =>
-                      handleConfigChange('llm.model', value)
-                    }
-                  >
-                    <SelectTrigger id="llm-model" disabled={modelsLoading}>
-                      <SelectValue
-                        placeholder={
-                          modelsLoading ? 'Loading models...' : 'Select model'
-                        }
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {modelOptions.length > 0 ? (
-                        modelOptions.map(model => (
-                          <SelectItem key={model.value} value={model.value}>
-                            <div className="flex flex-col">
-                              <span>{model.label}</span>
-                              {model.description && (
+                  {/* Show input field when no models available or when custom is selected */}
+                  {(modelOptions.length === 0 && !modelsLoading) || localConfig.llm?.model === 'custom' ? (
+                    <Input
+                      id="llm-model-custom"
+                      value={localConfig.llm?.model === 'custom' ? '' : (localConfig.llm?.model || '')}
+                      onChange={e => handleConfigChange('llm.model', e.target.value)}
+                      placeholder="Enter custom model name (e.g., gpt-4, claude-3-opus)"
+                    />
+                  ) : (
+                    <Select
+                      value={localConfig.llm?.model}
+                      onValueChange={value =>
+                        handleConfigChange('llm.model', value)
+                      }
+                    >
+                      <SelectTrigger id="llm-model" disabled={modelsLoading}>
+                        <SelectValue
+                          placeholder={
+                            modelsLoading ? 'Loading models...' : 'Select model'
+                          }
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {modelOptions.length > 0 && (
+                          <>
+                            {modelOptions.map(model => (
+                              <SelectItem key={model.value} value={model.value}>
+                                <div className="flex flex-col">
+                                  <span>{model.label}</span>
+                                  {model.description && (
+                                    <span className="text-xs text-muted-foreground">
+                                      {model.description}
+                                    </span>
+                                  )}
+                                </div>
+                              </SelectItem>
+                            ))}
+                            <SelectItem value="custom">
+                              <div className="flex flex-col">
+                                <span>Custom Model</span>
                                 <span className="text-xs text-muted-foreground">
-                                  {model.description}
+                                  Enter a custom model name
                                 </span>
-                              )}
-                            </div>
+                              </div>
+                            </SelectItem>
+                          </>
+                        )}
+                        {modelOptions.length === 0 && modelsLoading && (
+                          <SelectItem value="loading" disabled>
+                            Loading...
                           </SelectItem>
-                        ))
-                      ) : (
-                        <SelectItem value="custom" disabled>
-                          {modelsLoading ? 'Loading...' : 'No models available'}
-                        </SelectItem>
-                      )}
-                    </SelectContent>
-                  </Select>
+                        )}
+                      </SelectContent>
+                    </Select>
+                  )}
                 </div>
               </div>
 
