@@ -144,9 +144,10 @@ async def test_provider_connection(
             "model_count": len(result.models),
         }
     except Exception as e:
+        logger.error(f"Error testing connection for provider '{provider}': {e}")
         return {
             "provider": provider,
             "available": False,
-            "error": str(e),
+            "error": "Failed to connect to provider.",
             "model_count": 0,
         }
