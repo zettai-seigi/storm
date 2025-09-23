@@ -21,7 +21,7 @@ diskcache==5.6.3
 # =========================
 # Backend Dependencies
 # =========================
-fastapi==0.109.2
+fastapi==0.117.1  # Updated to be compatible with starlette 0.47.2
 uvicorn[standard]==0.24.0
 starlette==0.47.2  # Updated to latest stable version
 python-multipart==0.0.18  # Updated to fix DoS vulnerability (CVE-2024-53981)

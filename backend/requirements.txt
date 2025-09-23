@@ -1,5 +1,5 @@
 # FastAPI and server dependencies
-fastapi==0.109.2
+fastapi==0.117.1  # Updated to be compatible with starlette 0.47.2
 uvicorn[standard]==0.24.0
 starlette==0.47.2  # Updated to latest stable version
 
