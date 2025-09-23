@@ -22,7 +22,7 @@ def test_tavily():
         )
         return False
 
-    print(f"✓ TAVILY_API_KEY found: {api_key[:10]}...")
+    print("✓ TAVILY_API_KEY found: [REDACTED]")
 
     # Test actual search
     try:
