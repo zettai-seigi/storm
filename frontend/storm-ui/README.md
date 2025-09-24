@@ -123,17 +123,33 @@ The STORM pipeline consists of four main stages:
 git clone https://github.com/zettai-seigi/storm.git
 cd storm
 
-# Start the backend (Terminal 1)
+# Install Python dependencies (Terminal 1)
+# IMPORTANT: Both requirements files are needed!
+
+# 1. Install core STORM library dependencies
+pip install -r requirements.txt
+
+# 2. Install backend API dependencies
 cd backend
 pip install -r requirements.txt
+
+# 3. Configure API keys
+cp .env.template .env
+# Edit .env with your API keys
+
+# 4. Start the backend
 python main.py  # Runs on http://localhost:8000
 
 # Start the frontend (Terminal 2)
-cd frontend/storm-ui
+cd ../frontend/storm-ui
 npm install
 cp .env.example .env.local
 npm run dev  # Runs on http://localhost:3000
 ```
+
+**Note:** You must install BOTH:
+- Root `requirements.txt` - Core STORM library (knowledge_storm package)
+- Backend `requirements.txt` - FastAPI server dependencies
 
 For detailed installation instructions, see [INSTALL.md](./INSTALL.md).
 
@@ -628,12 +644,18 @@ describe('ProjectCard', () => {
 
 ```bash
 # Backend production setup
+cd storm  # Start from root
+
+# Install BOTH requirements (order matters!)
+pip install -r requirements.txt  # Core STORM library
 cd backend
-pip install -r requirements.txt
+pip install -r requirements.txt  # Backend API dependencies
+
+# Run production server
 uvicorn main:app --host 0.0.0.0 --port 8000
 
-# Frontend production build
-cd frontend/storm-ui
+# Frontend production build (new terminal)
+cd ../frontend/storm-ui
 npm install
 npm run build
 npm start  # Runs on port 3000

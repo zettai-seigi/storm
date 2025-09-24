@@ -105,13 +105,13 @@ NEXT_PUBLIC_ENABLE_COLLABORATION=false
 
 ### Step 4: Backend Setup (Required)
 
-The STORM UI requires the backend API to be running. Follow these steps:
+The STORM UI requires both the core STORM library and backend API to be installed. Follow these steps:
 
 ```bash
-# Navigate to backend directory
-cd ../../backend
+# Navigate to STORM root directory
+cd ../..
 
-# Create Python virtual environment
+# Create Python virtual environment (recommended)
 python -m venv venv
 
 # Activate virtual environment
@@ -120,7 +120,13 @@ source venv/bin/activate
 # On Windows:
 # venv\Scripts\activate
 
-# Install Python dependencies
+# IMPORTANT: Install BOTH requirements files
+
+# 1. First, install core STORM dependencies (from root)
+pip install -r requirements.txt
+
+# 2. Then, install backend API dependencies
+cd backend
 pip install -r requirements.txt
 
 # Create API keys configuration
@@ -134,6 +140,10 @@ python main.py
 ```
 
 The backend API will start on `http://localhost:8000`
+
+**Note:** Both requirements files are necessary:
+- Root `requirements.txt`: Core STORM library (knowledge_storm, litellm, dspy, etc.)
+- Backend `requirements.txt`: API server (FastAPI, uvicorn, etc.)
 
 ## Configuration
 
