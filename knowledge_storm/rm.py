@@ -9,6 +9,22 @@ import dspy
 import requests
 from dsp import backoff_hdlr, giveup_hdlr
 
+
+# Custom giveup handler for DuckDuckGo that handles DDGSException properly
+def ddg_giveup_handler(details):
+    """Custom giveup handler for DuckDuckGo that handles DDGSException properly."""
+    e = details.get("exception") if isinstance(details, dict) else details
+    # Check if it's a DDGSException
+    if hasattr(e, "__class__") and e.__class__.__name__ == "DDGSException":
+        # DDGSException stores its message as str(e), not e.message
+        error_message = str(e)
+        if "rate limit" in error_message.lower():
+            return False  # Don't give up on rate limits
+        return True  # Give up on other DDGSException errors
+    # Fall back to default handler for other exceptions
+    return giveup_hdlr(details)
+
+
 from .utils import WebPageHelper
 
 
@@ -791,11 +807,16 @@ class DuckDuckGoSearchRM(dspy.Retrieve):
         max_time=1000,
         max_tries=8,
         on_backoff=backoff_hdlr,
-        giveup=giveup_hdlr,
+        giveup=ddg_giveup_handler,
     )
     def request(self, query: str):
+        # Validate query is not empty
+        if not query or not query.strip():
+            print(f"Warning: Empty query provided to DuckDuckGoRM, skipping search")
+            return []
+
         results = self.ddgs.text(
-            query, max_results=self.k, backend=self.duck_duck_go_backend
+            query.strip(), max_results=self.k, backend=self.duck_duck_go_backend
         )
         return results
 
