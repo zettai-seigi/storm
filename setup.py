@@ -58,11 +58,11 @@ setup(
         "huggingface-hub>=0.24.5",
         "packaging>=24.1",
         "tenacity>=9.0.0",
-        "python-multipart==0.0.18",
+        "python-multipart==0.0.22",
         "PyJWT==2.10.1",
-        "cryptography==44.0.1",
+        "cryptography==46.0.5",
         "markdown2>=2.5.4",
-        "black==24.3.0",
+        "black==26.3.1",
     ],
     extras_require={
         "dev": [
